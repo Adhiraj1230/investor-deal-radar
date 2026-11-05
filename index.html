@@ -1371,7 +1371,14 @@ function showDetailsById(encoded) {
 
       <div class="detail-item">
         <small>Listed date</small>
-        <strong>${escapeHTML(p.listedDate || "Not provided")}</strong>
+        <strong>${escapeHTML(p.listedDate
+  ? new Date(p.listedDate).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC"
+    })
+  : "Not provided"}</strong>
       </div>
 
       <div class="detail-item">
