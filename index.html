@@ -131,6 +131,7 @@ footer{border-top:1px solid var(--line);padding:25px 5%;color:var(--muted);font-
             <option value="Single Family">Single family</option>
             <option value="Townhouse">Townhouse</option>
             <option value="Multi Family">Multi-family</option>
+            <option value="Condo">Condo</option>
           </select>
         </div>
         <div class="field">
@@ -166,7 +167,7 @@ footer{border-top:1px solid var(--line);padding:25px 5%;color:var(--muted);font-
 
   <section class="stats">
     <div class="stat"><strong>Nationwide</strong><span>Search direction</span></div>
-    <div class="stat"><strong id="resultCount">6</strong><span>Demo properties shown</span></div>
+    <div class="stat"><strong id="resultCount">6</strong><span>Live listings found</span></div>
     <div class="stat"><strong id="savedStat">0</strong><span>Properties saved</span></div>
   </section>
 
@@ -176,10 +177,10 @@ footer{border-top:1px solid var(--line);padding:25px 5%;color:var(--muted);font-
         <h2>Explore investment properties</h2>
         <p>Browse properties and evaluate their potential.</p>
       </div>
-      <div class="results-label" id="resultsLabel">Showing demo listings</div>
+      <div class="results-label" id="resultsLabel">Search for a city, state, or ZIP to load listings</div>
     </div>
     <div class="listings" id="listings"></div>
-    <p class="notice">Demo experience: These sample properties and figures are illustrative only. They are not active listings, verified sale prices, valuations, or investment recommendations.</p>
+    <p class="notice">Listings are provided by RentCast and may not include every property or the most recent changes. Listing details should be independently verified. ARV, renovation costs, and profit analysis are not connected yet.</p>
   </section>
 
   <section id="how-it-works" style="margin-top:55px">
@@ -217,121 +218,182 @@ footer{border-top:1px solid var(--line);padding:25px 5%;color:var(--muted);font-
 </div>
 
 <script>
-const properties = [
-  {id:1,address:"1842 Pine Street",city:"Philadelphia, PA",zip:"19103",price:245000,beds:3,baths:2,sqft:1550,type:"Single Family",arv:345000,reno:35000,holding:8000,buying:7000,selling:21000,photo:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900",tag:"Sample opportunity"},
-  {id:2,address:"726 Maple Avenue",city:"Richmond, VA",zip:"23220",price:189000,beds:3,baths:1,sqft:1420,type:"Single Family",arv:275000,reno:42000,holding:7000,buying:6000,selling:16500,photo:"https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=900",tag:"Sample opportunity"},
-  {id:3,address:"412 Oak Lane",city:"Charlotte, NC",zip:"28205",price:315000,beds:4,baths:3,sqft:2100,type:"Single Family",arv:425000,reno:45000,holding:10000,buying:9000,selling:25500,photo:"https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=900",tag:"Sample opportunity"},
-  {id:4,address:"93 Cedar Court",city:"Columbus, OH",zip:"43215",price:165000,beds:2,baths:1,sqft:1180,type:"Townhouse",arv:235000,reno:28000,holding:6500,buying:5000,selling:14100,photo:"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=900",tag:"Sample opportunity"},
-  {id:5,address:"208 Willow Drive",city:"Atlanta, GA",zip:"30310",price:275000,beds:4,baths:2,sqft:1850,type:"Multi Family",arv:390000,reno:55000,holding:11000,buying:8500,selling:23400,photo:"https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=900",tag:"Sample opportunity"},
-  {id:6,address:"51 Birch Street",city:"Phoenix, AZ",zip:"85004",price:225000,beds:3,baths:2,sqft:1600,type:"Single Family",arv:320000,reno:38000,holding:8000,buying:7000,selling:19200,photo:"https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=900",tag:"Sample opportunity"}
-];
+let properties = [];
+let visibleProperties = [];
+let saved = JSON.parse(localStorage.getItem("idrSaved") || "[]").map(String);
 
-let saved = JSON.parse(localStorage.getItem("idrSaved") || "[]");
-let visibleProperties = [...properties];
-
-function estimatedProfit(p){
-  return p.arv-p.price-p.reno-p.holding-p.buying-p.selling;
-}
 function money(n){
-  return "$"+Math.round(n).toLocaleString("en-US");
+  return Number.isFinite(Number(n)) ? "$"+Math.round(Number(n)).toLocaleString("en-US") : "Not available";
 }
+
+function normalizeProperty(item, index){
+  const rawType = String(item.propertyType || "Residential").toLowerCase();
+  let type = "Single Family";
+  if(rawType.includes("town")) type = "Townhouse";
+  else if(rawType.includes("multi")) type = "Multi Family";
+  else if(rawType.includes("condo") || rawType.includes("apartment")) type = "Condo";
+  else if(rawType.includes("manufactured")) type = "Manufactured";
+  const photos = Array.isArray(item.photos) ? item.photos : [];
+  return {
+    id: String(item.id || item.listingId || item.formattedAddress || ("listing-"+index)),
+    address: item.addressLine1 || item.formattedAddress || "Address unavailable",
+    city: [item.city, item.state].filter(Boolean).join(", "),
+    zip: item.zipCode || "",
+    price: Number(item.price) || 0,
+    beds: Number(item.bedrooms) || 0,
+    baths: Number(item.bathrooms) || 0,
+    sqft: Number(item.squareFootage) || 0,
+    type,
+    photo: photos.length ? photos[0] : "",
+    listedDate: item.listedDate || "",
+    daysOnMarket: item.daysOnMarket,
+    raw: item
+  };
+}
+
 function renderListings(items, target="listings"){
   const container=document.getElementById(target);
   if(!items.length){
-    container.innerHTML='<div class="empty">No demo properties match those filters. Try changing your search.</div>';
+    container.innerHTML='<div class="empty">No listings to show. Search a city, state, or ZIP code to get started.</div>';
     return;
   }
   container.innerHTML=items.map(p=>`
     <article class="card">
       <div class="photo">
-        <img src="${p.photo}" alt="Sample property exterior" loading="lazy">
-        <span class="demo-tag">DEMO LISTING</span>
-        <span class="deal-tag">Example data</span>
+        ${p.photo ? `<img src="${p.photo}" alt="Property listing photo" loading="lazy" onerror="this.style.display='none'">` : '<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#9aabc1;font-size:13px">No listing photo provided</div>'}
+        <span class="demo-tag">RENTCAST LISTING</span>
       </div>
       <div class="card-body">
         <div class="price">${money(p.price)}</div>
         <div class="address">${p.address}</div>
-        <div class="city">${p.city} · ${p.zip}</div>
+        <div class="city">${p.city}${p.zip ? " · "+p.zip : ""}</div>
         <div class="features">
-          <span>${p.beds} beds</span><span>${p.baths} baths</span><span>${p.sqft.toLocaleString()} sqft</span>
+          <span>${p.beds || "—"} beds</span><span>${p.baths || "—"} baths</span><span>${p.sqft ? p.sqft.toLocaleString()+" sqft" : "Sqft unavailable"}</span>
         </div>
         <div class="metrics">
-          <div><span>Example ARV</span><strong>${money(p.arv)}</strong></div>
-          <div><span>Estimated profit*</span><strong style="color:${estimatedProfit(p)>=0?'var(--green)':'#ff8a8a'}">${money(estimatedProfit(p))}</strong></div>
+          <div><span>ARV</span><strong>Not analyzed</strong></div>
+          <div><span>Estimated profit</span><strong>Not analyzed</strong></div>
         </div>
         <div class="card-actions">
-          <button class="details-btn" onclick="showDetails(${p.id})">View details</button>
-          <button class="analyze-btn" onclick="analyze(${p.id})">Analyze with AI</button>
+          <button class="details-btn" onclick="showDetails('${encodeURIComponent(p.id)}')">View details</button>
+          <button class="analyze-btn" onclick="analyze('${encodeURIComponent(p.id)}')">Deal analysis</button>
         </div>
-        <button class="details-btn" style="width:100%;margin-top:8px" onclick="toggleSave(${p.id})">${saved.includes(p.id)?"♥ Saved — remove":"♡ Save property"}</button>
+        <button class="details-btn" style="width:100%;margin-top:8px" onclick="toggleSave('${encodeURIComponent(p.id)}')">${saved.includes(p.id)?"♥ Saved — remove":"♡ Save property"}</button>
       </div>
     </article>`).join("");
 }
-function applyFilters(){
-  const q=document.getElementById("locationSearch").value.trim().toLowerCase();
+
+function getSearchParts(value){
+  const q=value.trim();
+  if(/^\d{5}$/.test(q)) return {zipCode:q};
+  const comma=q.match(/^(.+?),\s*([A-Za-z]{2})$/);
+  if(comma) return {city:comma[1].trim(),state:comma[2].toUpperCase()};
+  const stateAtEnd=q.match(/^(.+?)\s+([A-Za-z]{2})$/);
+  if(stateAtEnd) return {city:stateAtEnd[1].trim(),state:stateAtEnd[2].toUpperCase()};
+  return {city:q};
+}
+
+async function applyFilters(){
+  const search=document.getElementById("locationSearch").value.trim();
+  if(!search){
+    document.getElementById("resultsLabel").textContent="Enter a city, state, or ZIP code";
+    return;
+  }
+  const button=document.querySelector(".search-row .primary");
+  button.disabled=true;
+  button.textContent="Searching...";
+  document.getElementById("resultsLabel").textContent="Loading live listings...";
+  try{
+    const parts=getSearchParts(search);
+    const params=new URLSearchParams({...parts,limit:"50"});
+    const response=await fetch("/api/listings?"+params.toString());
+    const data=await response.json();
+    if(!response.ok) throw new Error(data.error || data.message || "The listing provider returned an error.");
+    if(!Array.isArray(data)) throw new Error("Unexpected response from the listing provider.");
+    properties=data.map(normalizeProperty);
+    filterListings();
+    document.getElementById("resultsLabel").textContent="Showing "+properties.length+" RentCast listings for "+search;
+  }catch(error){
+    properties=[];
+    visibleProperties=[];
+    renderListings([]);
+    document.getElementById("resultCount").textContent="0";
+    document.getElementById("resultsLabel").textContent="Search failed";
+    document.getElementById("listings").innerHTML='<div class="empty">'+(error.message || "Unable to load listings.")+' Check that your RentCast API key is set in Vercel and try again.</div>';
+  }finally{
+    button.disabled=false;
+    button.textContent="Search properties";
+  }
+}
+
+function filterListings(){
   const type=document.getElementById("typeFilter").value;
   const price=Number(document.getElementById("priceFilter").value);
   const beds=Number(document.getElementById("bedFilter").value);
   const sort=document.getElementById("sortFilter").value;
-  visibleProperties=properties.filter(p=>
-    (!q || (p.city+" "+p.address+" "+p.zip).toLowerCase().includes(q)) &&
-    (type==="all" || p.type===type) &&
-    p.price<=price && p.beds>=beds
-  );
+  visibleProperties=properties.filter(p=>(type==="all" || p.type===type) && p.price<=price && p.beds>=beds);
   if(sort==="price") visibleProperties.sort((a,b)=>a.price-b.price);
-  if(sort==="profit") visibleProperties.sort((a,b)=>estimatedProfit(b)-estimatedProfit(a));
   renderListings(visibleProperties);
   document.getElementById("resultCount").textContent=visibleProperties.length;
-  document.getElementById("resultsLabel").textContent="Showing "+visibleProperties.length+" demo listings";
 }
+
+function findProperty(id){
+  const decoded=decodeURIComponent(String(id));
+  return properties.find(p=>p.id===decoded);
+}
+
 function showDetails(id){
-  const p=properties.find(x=>x.id===id);
+  const p=findProperty(id);
+  if(!p) return;
   document.getElementById("modalContent").innerHTML=`
-    <div class="eyebrow">Demo property · ${p.type}</div>
+    <div class="eyebrow">RentCast listing · ${p.type}</div>
     <h2>${p.address}</h2>
     <p>${p.city} ${p.zip}</p>
-    <img class="modal-image" src="${p.photo}" alt="Sample property">
+    ${p.photo ? `<img class="modal-image" src="${p.photo}" alt="Property listing photo">` : ""}
     <div class="analysis-grid">
-      <div class="analysis-item"><span>Example asking price</span><strong>${money(p.price)}</strong></div>
-      <div class="analysis-item"><span>Example resale estimate</span><strong>${money(p.arv)}</strong></div>
-      <div class="analysis-item"><span>Bedrooms / bathrooms</span><strong>${p.beds} / ${p.baths}</strong></div>
-      <div class="analysis-item"><span>Living area</span><strong>${p.sqft.toLocaleString()} sqft</strong></div>
+      <div class="analysis-item"><span>Listing price</span><strong>${money(p.price)}</strong></div>
+      <div class="analysis-item"><span>Property type</span><strong>${p.type}</strong></div>
+      <div class="analysis-item"><span>Bedrooms / bathrooms</span><strong>${p.beds || "—"} / ${p.baths || "—"}</strong></div>
+      <div class="analysis-item"><span>Living area</span><strong>${p.sqft ? p.sqft.toLocaleString()+" sqft" : "Not provided"}</strong></div>
     </div>
-    <p>Property type: ${p.type}. These details are sample data for testing the marketplace layout.</p>
-    <button class="primary" onclick="analyze(${p.id})">Analyze this property</button>
-    <div class="disclaimer">This is a fictional demo listing. Property details, pricing, and images have not been verified.</div>`;
+    <p>${p.daysOnMarket != null ? "Days on market: "+p.daysOnMarket : "Days on market: Not provided"}${p.listedDate ? " · Listed: "+p.listedDate : ""}</p>
+    <div class="disclaimer">Listing information is supplied by RentCast. Confirm availability, property condition, listing details, and all financial figures independently.</div>`;
   openModal();
 }
+
 function analyze(id){
-  const p=properties.find(x=>x.id===id);
-  const profit=estimatedProfit(p);
-  const maxOffer=p.arv-p.reno-p.holding-p.buying-p.selling-30000;
+  const p=findProperty(id);
+  if(!p) return;
   document.getElementById("modalContent").innerHTML=`
-    <div class="eyebrow">Investment analysis preview</div>
+    <div class="eyebrow">Deal analysis</div>
     <h2>${p.address}</h2>
-    <p>${p.city} · Example numbers only</p>
+    <p>${p.city} · Asking price ${money(p.price)}</p>
     <div class="analysis-grid">
-      <div class="analysis-item"><span>Example resale value (ARV)</span><strong>${money(p.arv)}</strong></div>
-      <div class="analysis-item"><span>Estimated renovation</span><strong>${money(p.reno)}</strong></div>
-      <div class="analysis-item"><span>Estimated total costs</span><strong>${money(p.price+p.reno+p.holding+p.buying+p.selling)}</strong></div>
-      <div class="analysis-item"><span>Illustrative profit</span><strong style="color:${profit>=0?'var(--green)':'#ff8a8a'}">${money(profit)}</strong></div>
-      <div class="analysis-item"><span>Example target profit</span><strong>$30,000</strong></div>
-      <div class="analysis-item"><span>Illustrative maximum offer</span><strong>${money(Math.max(0,maxOffer))}</strong></div>
+      <div class="analysis-item"><span>Listing price</span><strong>${money(p.price)}</strong></div>
+      <div class="analysis-item"><span>Bedrooms / bathrooms</span><strong>${p.beds || "—"} / ${p.baths || "—"}</strong></div>
+      <div class="analysis-item"><span>ARV</span><strong>Not available</strong></div>
+      <div class="analysis-item"><span>Renovation estimate</span><strong>Not available</strong></div>
+      <div class="analysis-item"><span>Estimated profit</span><strong>Not available</strong></div>
+      <div class="analysis-item"><span>Maximum offer</span><strong>Not available</strong></div>
     </div>
-    <h3>What an analysis should examine</h3>
-    <p>Comparable sold properties, renovation scope, local market conditions, taxes, insurance, financing, closing costs, and resale expenses.</p>
-    <div class="disclaimer"><strong>Preview only — not actual AI analysis.</strong> These calculations use invented demo figures and simple assumptions. The maximum offer is an example calculation, not a recommendation. Real analysis will require verified property data, comparable sales, and an AI-powered research system.</div>`;
+    <h3>AI deal analysis is the next build step</h3>
+    <p>A reliable deal score needs comparable sold properties, renovation estimates, closing and holding costs, and local market data. We have not connected those sources yet, so this page will not invent a profit number.</p>
+    <div class="disclaimer">This is not an AI-generated investment recommendation. Verify all property information and do your own due diligence.</div>`;
   openModal();
 }
+
 function openModal(){document.getElementById("modalBackdrop").classList.add("open")}
 function closeModal(){document.getElementById("modalBackdrop").classList.remove("open")}
 function backdropClose(e){if(e.target.id==="modalBackdrop")closeModal()}
+
 function toggleSave(id){
-  saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];
+  const decoded=decodeURIComponent(String(id));
+  saved=saved.includes(decoded)?saved.filter(x=>x!==decoded):[...saved,decoded];
   localStorage.setItem("idrSaved",JSON.stringify(saved));
   updateSaved();
   renderListings(visibleProperties);
 }
+
 function updateSaved(){
   document.getElementById("savedCount").textContent=saved.length;
   document.getElementById("savedStat").textContent=saved.length;
@@ -339,17 +401,19 @@ function updateSaved(){
   const area=document.getElementById("savedMessage");
   if(!savedItems.length){
     area.className="empty";
-    area.textContent="You haven't saved any properties yet. Save a property to see it here.";
+    area.textContent="Saved properties appear here after you search and save a listing.";
   }else{
     area.className="listings";
     renderListings(savedItems,"savedMessage");
   }
 }
+
 document.getElementById("locationSearch").addEventListener("keydown",e=>{if(e.key==="Enter")applyFilters()});
-document.getElementById("typeFilter").addEventListener("change",applyFilters);
-document.getElementById("priceFilter").addEventListener("change",applyFilters);
-document.getElementById("bedFilter").addEventListener("change",applyFilters);
-renderListings(properties);
+document.getElementById("typeFilter").addEventListener("change",filterListings);
+document.getElementById("priceFilter").addEventListener("change",filterListings);
+document.getElementById("bedFilter").addEventListener("change",filterListings);
+document.getElementById("sortFilter").addEventListener("change",filterListings);
+renderListings([]);
 updateSaved();
 </script>
 </body>
