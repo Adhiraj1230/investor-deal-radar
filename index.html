@@ -305,6 +305,7 @@ async function applyFilters(){
   document.getElementById("resultsLabel").textContent="Loading live listings...";
   try{
     const parts=getSearchParts(search);
+if(parts.city) parts.city=parts.city.toLowerCase().replace(/\b[a-z]/g, c=>c.toUpperCase());
     const params=new URLSearchParams({...parts,limit:"50"});
     const response=await fetch("/api/listings?"+params.toString());
     const data=await response.json();
