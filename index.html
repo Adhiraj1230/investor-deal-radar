@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,394 +5,290 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Investor Deal Radar</title>
 <style>
-:root{--blue:#2868df;--dark:#14233d;--muted:#68778d;--line:#e5eaf2;--bg:#f5f8fd;--green:#13865e}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:#17243a;font-family:Arial,sans-serif}
-button,input,select{font:inherit}
-button{cursor:pointer}
-header{background:white;border-bottom:1px solid var(--line);padding:17px 5%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
-.logo{font-weight:900;font-size:20px;color:var(--dark)}
-.logo span{color:var(--blue)}
-nav{display:flex;gap:22px;align-items:center}
-nav a{color:#56647a;text-decoration:none;font-size:13px}
-main{max-width:1200px;margin:auto;padding:35px 22px 70px}
-.hero{padding:25px 0}
-.eyebrow{color:var(--blue);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
-h1{font-size:clamp(34px,5vw,54px);line-height:1.1;letter-spacing:-1.8px;margin:13px 0}
-h1 span{color:var(--blue)}
-.hero p,.sub{color:var(--muted);line-height:1.6}
-.search-panel,.stat,.card,.modal{background:white;border:1px solid var(--line);border-radius:13px}
-.search-panel{padding:18px;margin-top:24px;box-shadow:0 5px 20px #152b4b08}
-.search-row{display:flex;gap:10px}
-input,select{width:100%;padding:13px;border:1px solid var(--line);border-radius:8px;background:white;color:#17243a;outline:none}
-input:focus,select:focus{border-color:var(--blue)}
-.search-row input{flex:1}
-.primary{background:var(--blue);color:white;border:0;border-radius:8px;padding:12px 18px;font-weight:700}
-.filters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
-.field label{display:block;font-size:11px;color:var(--muted);margin:0 0 7px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:22px 0 35px}
-.stat{padding:17px}
-.stat strong{display:block;font-size:21px}
-.stat span{font-size:12px;color:var(--muted)}
-.section-head{display:flex;justify-content:space-between;align-items:end;margin:30px 0 17px;gap:12px}
-.section-head h2{margin:0 0 6px}
-.section-head p{margin:0;color:var(--muted);font-size:13px}
-.results-label{font-size:12px;color:var(--muted)}
-.listings{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}
-.card{overflow:hidden;box-shadow:0 4px 18px #17243a08}
-.photo{height:180px;background:#edf3fc;display:flex;align-items:center;justify-content:center;color:#8392a8;font-size:13px}
-.photo img{width:100%;height:100%;object-fit:cover}
-.card-body{padding:16px}
-.price{font-size:23px;font-weight:800}
-.address{font-size:14px;margin-top:6px;font-weight:700}
-.city{font-size:12px;color:var(--muted);margin-top:4px}
-.features{display:flex;gap:13px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0;margin:13px 0;font-size:12px;color:#53647c;flex-wrap:wrap}
-.card-actions{display:flex;gap:8px;margin-top:13px}
-.card-actions button{flex:1;padding:10px 7px;border-radius:7px;font-size:12px;font-weight:700}
-.details-btn{background:#edf3ff;color:#245bc0;border:1px solid #dbe6fa}
-.analyze-btn{background:var(--blue);color:white;border:0}
-.save-btn{width:100%;margin-top:8px;padding:9px;background:white;border:1px solid var(--line);border-radius:7px;color:#40516b}
-.empty{grid-column:1/-1;padding:45px;text-align:center;background:white;border:1px solid var(--line);border-radius:12px;color:var(--muted)}
-.notice{font-size:11px;color:var(--muted);line-height:1.6;margin-top:25px}
-footer{text-align:center;padding:25px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);background:white}
-.modal-backdrop{display:none;position:fixed;inset:0;background:#101d33a8;z-index:10;align-items:center;justify-content:center;padding:15px}
-.modal-backdrop.open{display:flex}
-.modal{width:min(700px,100%);max-height:92vh;overflow:auto;padding:24px;position:relative}
-.close{float:right;border:0;background:#edf2fa;border-radius:7px;padding:8px}
-.modal h2{margin:12px 0 5px}
-.modal p{color:var(--muted);font-size:13px;line-height:1.5}
-.analysis-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin:18px 0}
-.analysis-item{padding:14px;border:1px solid var(--line);border-radius:9px;background:#f8faff}
-.analysis-item span{display:block;color:var(--muted);font-size:11px}
-.analysis-item strong{display:block;font-size:19px;margin-top:6px}
-.free-box{background:#edf4ff;border:1px solid #d8e6ff;padding:17px;border-radius:10px;margin:15px 0}
-.free-box h3{margin:0 0 12px}
-.free-box label{font-size:12px;color:#52647d;display:block;margin:10px 0 6px}
-.free-box input{background:white}
-.spread{font-size:25px;font-weight:800;color:var(--green);margin-top:8px}
-.premium{position:relative;margin-top:20px;border:1px solid #dce4f1;border-radius:12px;overflow:hidden}
-.premium-content{padding:18px;filter:blur(5px);user-select:none;pointer-events:none}
-.premium-content h3{margin-top:0}
-.cost-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
-.lock-overlay{position:absolute;inset:0;background:#ffffffa8;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px}
-.lock-card{background:white;border:1px solid var(--line);box-shadow:0 8px 30px #1b315522;border-radius:12px;padding:22px;max-width:330px}
-.lock-card h3{margin:8px 0}
-.lock-card p{font-size:12px}
-.unlock{background:var(--blue);color:white;border:0;border-radius:8px;padding:12px 18px;font-weight:700;width:100%}
-.disclaimer{background:#f7f9fc;padding:12px;border-radius:8px;color:var(--muted);font-size:11px;line-height:1.5;margin-top:15px}
-.contact-link{display:inline-block;margin-top:10px;background:#eaf7f1;color:#14734f;padding:10px 13px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px}
-@media(max-width:850px){.listings{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){header{padding:14px}nav a{display:none}main{padding:22px 14px}.search-row{flex-direction:column}.filters{grid-template-columns:repeat(2,1fr)}.listings{grid-template-columns:1fr}.stats{gap:7px}.stat{padding:11px}.stat strong{font-size:17px}.section-head{align-items:start;flex-direction:column}}
+:root{--bg:#080f1d;--panel:#111e30;--panel2:#0c1727;--border:#263951;--blue:#4d8dff;--text:#f4f7fc;--muted:#9aacc4;--green:#35c98b;--red:#ff7272}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+header{min-height:78px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:12px 5%;position:sticky;top:0;background:#080f1df2;z-index:5}
+.logo{font-size:21px;font-weight:800}.logo span{color:var(--blue)}.tagline{font-size:10px;letter-spacing:2px;color:var(--muted);margin-top:5px}
+nav{display:flex;gap:25px;align-items:center}nav a{color:var(--muted);text-decoration:none;font-size:14px}button{cursor:pointer;border:0;border-radius:9px;padding:13px 19px;font-weight:700;font-size:14px}button:disabled{opacity:.6;cursor:wait}
+.primary{background:var(--blue);color:white}.secondary{background:#1c2c42;color:white;border:1px solid var(--border)}
+main{max-width:1400px;margin:auto;padding:35px 4% 70px}.intro{margin-bottom:25px;color:#b5c5da;line-height:1.6}
+.search-panel,.stat,.property{background:var(--panel);border:1px solid var(--border);border-radius:13px}.search-panel{padding:20px}.search-row{display:flex;gap:12px}
+input,select{background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:white;padding:14px;font-size:15px;width:100%;min-width:0}input::placeholder{color:#8294aa}.search-row input{flex:1}
+.filters{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:14px}.filter label,.calc-grid label{display:block;color:var(--muted);font-size:12px;margin-bottom:8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:38px 0}.stat{padding:20px;min-width:0}.stat strong{font-size:24px;display:block;margin-bottom:5px;overflow-wrap:anywhere}.stat small{color:var(--muted)}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:17px}.section-head h2{margin:0;font-size:23px}.section-head p,#resultsLabel{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}.property{overflow:hidden;min-width:0}.photo{height:175px;background:linear-gradient(135deg,#172943,#0c1727);display:flex;align-items:center;justify-content:center;color:#8da3bf;font-size:13px;overflow:hidden}.photo img{width:100%;height:100%;object-fit:cover}
+.property-body{padding:17px}.badge{display:inline-block;background:#1b3453;color:#8eb8ff;padding:6px 9px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.5px}.address{font-size:17px;font-weight:700;margin:12px 0 7px;overflow-wrap:anywhere}.price{font-size:23px;font-weight:800}.meta{display:flex;flex-wrap:wrap;gap:12px;color:var(--muted);font-size:12px;margin:13px 0}.property-actions{display:flex;gap:8px;margin-top:15px}.property-actions button{flex:1;padding:11px 7px;font-size:12px}
+.empty{background:var(--panel);border-radius:12px;padding:55px 20px;text-align:center;color:var(--muted);grid-column:1/-1;line-height:1.6}.notice{font-size:12px;color:var(--muted);line-height:1.6;margin-top:25px}.saved-section{margin-top:55px}
+.modal-backdrop{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:15px;z-index:20}.modal-backdrop.open{display:flex}.modal{background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:24px;width:100%;max-width:720px;max-height:90vh;overflow:auto}
+.modal-top{display:flex;justify-content:space-between;align-items:center;gap:15px}.modal-top h2{margin:0}.close{background:#263951;color:white;padding:8px 12px}.modal-image{width:100%;max-height:280px;object-fit:cover;border-radius:10px;margin:16px 0}
+.detail-grid,.result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}.detail-item,.result{background:var(--panel2);padding:15px;border:1px solid var(--border);border-radius:10px;min-width:0}.detail-item small,.result small{color:var(--muted);display:block}.detail-item strong,.result strong{display:block;font-size:18px;margin-top:7px;overflow-wrap:anywhere}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:20px 0}.result strong{font-size:24px}.profit{color:var(--green)}
+.breakdown{position:relative;margin-top:18px;background:var(--panel2);padding:18px;border-radius:10px;overflow:hidden}.breakdown-content{filter:blur(6px);user-select:none;pointer-events:none;line-height:2.1;color:#e4edf9}.lock-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:15px;background:#091321b8}.lock-overlay strong{font-size:18px}.lock-overlay p{font-size:12px;color:#c0cce0;max-width:420px;line-height:1.5}.disclaimer{border-left:3px solid var(--blue);padding:10px 13px;background:var(--panel2);color:var(--muted);font-size:11px;line-height:1.6;margin-top:15px}
+footer{border-top:1px solid var(--border);padding:22px 5%;color:var(--muted);font-size:12px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){header{padding:12px 4%;min-height:68px}nav{gap:10px}nav a{font-size:12px}nav a:nth-child(2){display:none}main{padding:25px 4%}.search-row{flex-direction:column}.filters{grid-template-columns:1fr 1fr}.stats{gap:8px}.stat{padding:13px}.stat strong{font-size:19px}.grid{grid-template-columns:1fr}.section-head{align-items:flex-start;flex-direction:column}.calc-grid,.detail-grid,.result-grid{grid-template-columns:1fr}.modal{padding:18px}}
 </style>
 </head>
 <body>
 <header>
-  <div class="logo">INVESTOR <span>DEAL RADAR</span></div>
-  <nav>
-    <a href="#properties">Properties</a>
-    <a href="#saved">Saved</a>
-    <a href="#how">How it works</a>
-  </nav>
+ <div><div class="logo">INVESTOR <span>DEAL RADAR</span></div><div class="tagline">REAL ESTATE. INVESTOR FOCUSED.</div></div>
+ <nav><a href="#properties">Properties</a><a href="#how">How it works</a><a href="#saved">Saved <span id="savedCount">0</span></a><button class="primary" onclick="document.getElementById('locationSearch').focus()">Explore deals</button></nav>
 </header>
-
 <main>
-<section class="hero">
-  <div class="eyebrow">Built for real estate investors</div>
-  <h1>Find properties.<br><span>Find your next deal.</span></h1>
-  <p>Search residential listings, compare opportunities, and understand the numbers before making a move.</p>
-  <div class="search-panel">
-    <div class="search-row">
-      <input id="locationSearch" placeholder="Enter city, state, or ZIP (example: Philadelphia, PA)">
-      <button class="primary" id="searchButton" onclick="applyFilters()">Search properties</button>
-    </div>
-    <div class="filters">
-      <div class="field"><label>Property type</label>
-        <select id="typeFilter">
-          <option value="all">All residential</option>
-          <option value="Single Family">Single family</option>
-          <option value="Townhouse">Townhouse</option>
-          <option value="Multi Family">Multi-family</option>
-          <option value="Condo">Condo</option>
-          <option value="Manufactured">Manufactured</option>
-        </select>
-      </div>
-      <div class="field"><label>Maximum price</label>
-        <select id="priceFilter">
-          <option value="99999999">Any price</option>
-          <option value="200000">$200,000</option>
-          <option value="300000">$300,000</option>
-          <option value="400000">$400,000</option>
-          <option value="500000">$500,000</option>
-        </select>
-      </div>
-      <div class="field"><label>Bedrooms</label>
-        <select id="bedFilter">
-          <option value="0">Any</option><option value="2">2+ beds</option>
-          <option value="3">3+ beds</option><option value="4">4+ beds</option>
-        </select>
-      </div>
-      <div class="field"><label>Sort by</label>
-        <select id="sortFilter">
-          <option value="default">Recommended</option>
-          <option value="price">Price: low to high</option>
-        </select>
-      </div>
-    </div>
+ <p class="intro">Find residential properties and evaluate their potential as investment deals. Search markets, compare numbers, and make smarter decisions.</p>
+ <section class="search-panel">
+  <form id="searchForm"><div class="search-row"><input id="locationSearch" placeholder="Enter city, state, or ZIP code (e.g. Philadelphia, PA)" autocomplete="off"><button class="primary" id="searchButton" type="submit">Search properties</button></div></form>
+  <div class="filters">
+   <div class="filter"><label for="typeFilter">Property type</label><select id="typeFilter"><option value="">All residential</option><option value="Single Family">Single family</option><option value="Condo">Condo</option><option value="Townhouse">Townhouse</option><option value="Multi-Family">Multi-family</option><option value="Manufactured">Manufactured</option><option value="Apartment">Apartment</option></select></div>
+   <div class="filter"><label for="priceFilter">Maximum price</label><select id="priceFilter"><option value="">Any price</option><option value="150000">$150,000</option><option value="250000">$250,000</option><option value="350000">$350,000</option><option value="500000">$500,000</option><option value="750000">$750,000</option></select></div>
+   <div class="filter"><label for="bedFilter">Bedrooms</label><select id="bedFilter"><option value="">Any</option><option value="2">2+ bedrooms</option><option value="3">3+ bedrooms</option><option value="4">4+ bedrooms</option><option value="5">5+ bedrooms</option></select></div>
+   <div class="filter"><label for="sortFilter">Sort by</label><select id="sortFilter"><option value="recommended">Recommended</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="beds">Most bedrooms</option></select></div>
   </div>
-</section>
-
-<section class="stats">
-  <div class="stat"><strong>Nationwide</strong><span>Search markets</span></div>
-  <div class="stat"><strong id="resultCount">0</strong><span>Residential listings</span></div>
-  <div class="stat"><strong id="savedCount">0</strong><span>Saved properties</span></div>
-</section>
-
-<section id="properties">
-  <div class="section-head">
-    <div><h2>Explore properties</h2><p>Residential listings from RentCast.</p></div>
-    <div class="results-label" id="resultsLabel">Search to get started</div>
-  </div>
-  <div class="listings" id="listings"><div class="empty">Search a city or ZIP code to see properties.</div></div>
-  <p class="notice">Listing information is supplied by RentCast and may not reflect the latest changes. Always verify availability, condition, and details with the listing agent.</p>
-</section>
-
-<section id="saved" style="margin-top:45px">
-  <div class="section-head"><div><h2>Saved properties</h2><p>Your shortlist.</p></div></div>
-  <div id="savedListings" class="listings"><div class="empty">You haven't saved any properties yet.</div></div>
-</section>
-
-<section id="how" style="margin-top:45px">
-  <div class="section-head"><div><h2>How it works</h2><p>Find an opportunity, then analyze the numbers.</p></div></div>
-  <div class="stats">
-    <div class="stat"><strong>01. Discover</strong><span>Search residential properties.</span></div>
-    <div class="stat"><strong>02. Analyze</strong><span>Review costs and potential returns.</span></div>
-    <div class="stat"><strong>03. Decide</strong><span>Do your research before making an offer.</span></div>
-  </div>
-</section>
+ </section>
+ <section class="stats"><div class="stat"><strong id="marketStat">Nationwide</strong><small>Search direction</small></div><div class="stat"><strong id="listingStat">0</strong><small>Live listings found</small></div><div class="stat"><strong id="savedStat">0</strong><small>Properties saved</small></div></section>
+ <section id="properties"><div class="section-head"><div><h2>Explore investment properties</h2><p>Browse residential properties and evaluate their potential.</p></div><span id="resultsLabel">Enter a location to begin</span></div><div class="grid" id="propertyGrid"><div class="empty">Search a city, state, or ZIP code to find properties.</div></div></section>
+ <section id="how" style="margin-top:55px"><h2>How it works</h2><p class="intro">Search properties, save opportunities, and use the deal calculator to estimate possible investment returns.</p><div class="notice">Listings are provided by RentCast. Availability, pricing, and property details may change. Verify all information independently. ARV, repair costs, and profit calculations are estimates and are not guaranteed.</div></section>
+ <section id="saved" class="saved-section"><div class="section-head"><div><h2>Your saved properties</h2><p>Keep interesting opportunities in one place.</p></div></div><div class="grid" id="savedGrid"><div class="empty">You haven't saved any properties yet. Save a property to see it here.</div></div></section>
 </main>
+<footer>Investor Deal Radar · Property data provided by RentCast · Not financial or real estate investment advice.</footer>
 
-<footer>INVESTOR DEAL RADAR · Property data and estimates should be independently verified.</footer>
-
-<div class="modal-backdrop" id="modalBackdrop" onclick="backdropClose(event)">
-  <div class="modal">
-    <button class="close" onclick="closeModal()">Close ✕</button>
-    <div id="modalContent"></div>
+<div class="modal-backdrop" id="detailsModal" onclick="closeOnBackdrop(event,'detailsModal')"><div class="modal"><div class="modal-top"><h2>Property details</h2><button class="close" onclick="closeModal('detailsModal')">✕</button></div><div id="detailsContent"></div></div></div>
+<div class="modal-backdrop" id="analysisModal" onclick="closeOnBackdrop(event,'analysisModal')"><div class="modal">
+ <div class="modal-top"><h2>Deal Analyzer</h2><button class="close" onclick="closeModal('analysisModal')">✕</button></div>
+ <p id="analysisAddress" style="color:var(--muted)"></p>
+ <div class="calc-grid">
+  <div><label for="purchaseInput">Purchase price ($)</label><input id="purchaseInput" type="number" min="0" step="1000"></div>
+  <div><label for="arvInput">After-repair value / ARV ($)</label><input id="arvInput" type="number" min="0" step="1000" placeholder="Estimated resale value"></div>
+  <div><label for="materialsInput">Renovation materials ($)</label><input id="materialsInput" type="number" min="0" step="100"></div>
+  <div><label for="laborInput">Labor ($)</label><input id="laborInput" type="number" min="0" step="100"></div>
+  <div><label for="permitsInput">Permits and other repairs ($)</label><input id="permitsInput" type="number" min="0" step="100"></div>
+  <div><label for="contingencyInput">Repair contingency (%)</label><input id="contingencyInput" type="number" min="0" max="100" value="10" step="1"></div>
+  <div><label for="closingInput">Purchase closing costs ($)</label><input id="closingInput" type="number" min="0" step="100"></div>
+  <div><label for="holdingInput">Holding costs ($)</label><input id="holdingInput" type="number" min="0" step="100"></div>
+  <div><label for="sellingInput">Selling costs (%)</label><input id="sellingInput" type="number" min="0" max="100" value="6" step="0.5"></div>
+ </div>
+ <button class="primary" style="width:100%" onclick="calculateDeal()">Calculate deal</button>
+ <div id="analysisResults" style="display:none">
+  <div class="result-grid">
+   <div class="result"><small>Estimated ARV</small><strong id="arvResult"></strong></div>
+   <div class="result"><small>Estimated net profit</small><strong class="profit" id="profitResult"></strong></div>
   </div>
-</div>
+  <div class="breakdown">
+   <div class="breakdown-content">
+    Purchase price: <strong id="lockedPurchase"></strong><br>
+    Renovation materials: <strong id="lockedMaterials"></strong><br>
+    Labor: <strong id="lockedLabor"></strong><br>
+    Permits and other repairs: <strong id="lockedPermits"></strong><br>
+    Repair contingency: <strong id="lockedContingency"></strong><br>
+    Purchase closing costs: <strong id="lockedClosing"></strong><br>
+    Holding costs: <strong id="lockedHolding"></strong><br>
+    Selling costs: <strong id="lockedSelling"></strong><br>
+    Total estimated costs: <strong id="lockedTotal"></strong><br>
+    Estimated ARV: <strong id="lockedArv"></strong><br>
+    Estimated net profit: <strong id="lockedProfit"></strong>
+   </div>
+   <div class="lock-overlay"><strong>🔒 Detailed Deal Breakdown</strong><p>Premium access is coming soon. Your estimated ARV and net profit are shown above.</p></div>
+  </div>
+ </div>
+ <div class="disclaimer">This calculator provides estimates only. It does not include every possible expense, tax, financing cost, or risk. Verify all figures before making an investment decision.</div>
+</div></div>
 
 <script>
 let properties=[];
 let visibleProperties=[];
-let saved=JSON.parse(localStorage.getItem("idrSaved")||"[]").map(String);
+let savedProperties=[];
+let lastSearch="";
+try{savedProperties=JSON.parse(localStorage.getItem("investorDealRadarSaved")||"[]");if(!Array.isArray(savedProperties))savedProperties=[]}catch(e){savedProperties=[]}
 
-const residentialTypes=["single family","townhouse","multi-family","multi family","condo","manufactured","apartment"];
+function getSearchParts(search){
+ const value=search.trim();
+ if(/^\d{5}$/.test(value))return{zipCode:value};
+ const parts=value.split(",").map(x=>x.trim()).filter(Boolean);
+ if(parts.length>=2)return{city:parts[0],state:parts[1].toUpperCase()};
+ return{city:value};
+}
+function getPrice(p){const n=Number(p.price??p.listPrice??p.salePrice);return Number.isFinite(n)&&n>0?n:null}
+function getBeds(p){const n=Number(p.bedrooms??p.beds);return Number.isFinite(n)?n:null}
+function getBaths(p){const n=Number(p.bathrooms??p.baths);return Number.isFinite(n)?n:null}
+function getArea(p){const n=Number(p.squareFootage??p.livingArea??p.area);return Number.isFinite(n)?n:null}
+function getAddress(p){return p.formattedAddress||p.addressLine1||p.address||[p.streetAddress,p.city,p.state,p.zipCode].filter(Boolean).join(", ")||"Address not provided"}
+function getType(p){return p.propertyType||p.type||"Residential"}
+function isResidential(p){const t=String(getType(p)).toLowerCase();return !t.includes("land")&&!t.includes("commercial")}
+function getPhoto(p){return p.image||p.imageUrl||p.primaryPhoto||p.thumbnail||""}
+function propertyId(p){return String(p.id||p.listingId||p.formattedAddress||p.addressLine1||getAddress(p))}
+function displayValue(v,suffix=""){return v==null||!Number.isFinite(Number(v))?"Not provided":Number(v).toLocaleString("en-US")+suffix}
+function money(v){return Number(v).toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0})}
+function escapeHTML(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function saveSavedProperties(){try{localStorage.setItem("investorDealRadarSaved",JSON.stringify(savedProperties))}catch(e){alert("Your browser could not save this property. Check your storage settings.")}}
+function updateSavedUI(){document.getElementById("savedCount").textContent=savedProperties.length;document.getElementById("savedStat").textContent=savedProperties.length;renderSavedProperties()}
 
-function money(n){
-  return Number.isFinite(Number(n))?"$"+Math.round(Number(n)).toLocaleString("en-US"):"Not provided";
+document.getElementById("searchForm").addEventListener("submit",async e=>{e.preventDefault();await searchListings()});
+
+async function searchListings(){
+ const search=document.getElementById("locationSearch").value.trim();
+ if(!search){document.getElementById("resultsLabel").textContent="Enter a city, state, or ZIP code";return}
+ lastSearch=search;
+ const btn=document.getElementById("searchButton");
+ btn.disabled=true;btn.textContent="Searching...";
+ document.getElementById("resultsLabel").textContent="Loading listings...";
+ document.getElementById("propertyGrid").innerHTML='<div class="empty">Searching RentCast listings...</div>';
+ try{
+  const params=new URLSearchParams({...getSearchParts(search),limit:"50"});
+  const response=await fetch("/api/listings?"+params.toString());
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||data.message||"The listing provider returned an error.");
+  if(!Array.isArray(data))throw new Error("Unexpected response from the listing provider.");
+  properties=data.filter(isResidential);
+  document.getElementById("marketStat").textContent=search;
+  filterListings();
+ }catch(err){
+  properties=[];visibleProperties=[];
+  document.getElementById("listingStat").textContent="0";
+  document.getElementById("resultsLabel").textContent="Search failed";
+  document.getElementById("propertyGrid").innerHTML='<div class="empty">Could not load listings. '+escapeHTML(err.message)+'</div>';
+ }finally{
+  btn.disabled=false;btn.textContent="Search properties";
+ }
 }
-function getType(item){
-  return String(item.propertyType||"").toLowerCase().trim();
-}
-function isResidential(item){
-  return residentialTypes.includes(getType(item));
-}
-function normalizeProperty(item,index){
-  const photos=Array.isArray(item.photos)?item.photos:[];
-  return {
-    id:String(item.id||item.listingId||item.formattedAddress||"listing-"+index),
-    address:item.addressLine1||item.formattedAddress||"Address unavailable",
-    city:[item.city,item.state].filter(Boolean).join(", "),
-    zip:item.zipCode||"",
-    price:Number(item.price)||0,
-    beds:item.bedrooms,
-    baths:item.bathrooms,
-    sqft:item.squareFootage,
-    type:item.propertyType||"Residential",
-    photo:photos[0]||"",
-    raw:item
-  };
-}
-function displayField(value,label){
-  return value===undefined||value===null||value===""?"Not provided":value;
-}
-function getSearchParts(value){
-  const q=value.trim();
-  if(/^\d{5}$/.test(q))return {zipCode:q};
-  const match=q.match(/^(.+?)[,\s]+([A-Za-z]{2})$/);
-  if(match)return {city:match[1].trim(),state:match[2].toUpperCase()};
-  return {city:q};
-}
-async function applyFilters(){
-  const search=document.getElementById("locationSearch").value.trim();
-  if(!search){document.getElementById("resultsLabel").textContent="Enter a city, state, or ZIP code.";return;}
-  const button=document.getElementById("searchButton");
-  button.disabled=true;button.textContent="Searching...";
-  document.getElementById("resultsLabel").textContent="Loading listings...";
-  try{
-    const params=new URLSearchParams({...getSearchParts(search),limit:"50"});
-    const response=await fetch("/api/listings?"+params.toString());
-    const data=await response.json();
-    if(!response.ok)throw new Error(data.error||"Unable to load listings.");
-    if(!Array.isArray(data))throw new Error("Unexpected listing response.");
-    properties=data.filter(isResidential).map(normalizeProperty);
-    filterListings();
-    document.getElementById("resultsLabel").textContent="Residential results for "+search;
-  }catch(error){
-    properties=[];visibleProperties=[];
-    renderListings([],"listings");
-    document.getElementById("resultCount").textContent="0";
-    document.getElementById("resultsLabel").textContent="Search failed: "+error.message;
-  }finally{
-    button.disabled=false;button.textContent="Search properties";
-  }
-}
+
 function filterListings(){
-  const type=document.getElementById("typeFilter").value;
-  const price=Number(document.getElementById("priceFilter").value);
-  const beds=Number(document.getElementById("bedFilter").value);
-  visibleProperties=properties.filter(p=>
-    (type==="all"||p.type.toLowerCase()===type.toLowerCase())&&
-    p.price<=price&&(beds===0||(Number(p.beds)||0)>=beds)
-  );
-  if(document.getElementById("sortFilter").value==="price")visibleProperties.sort((a,b)=>a.price-b.price);
-  renderListings(visibleProperties,"listings");
-  document.getElementById("resultCount").textContent=visibleProperties.length;
+ let results=[...properties];
+ const max=Number(document.getElementById("priceFilter").value||0);
+ const beds=Number(document.getElementById("bedFilter").value||0);
+ const type=document.getElementById("typeFilter").value;
+ if(max)results=results.filter(p=>getPrice(p)!=null&&getPrice(p)<=max);
+ if(beds)results=results.filter(p=>getBeds(p)!=null&&getBeds(p)>=beds);
+ if(type)results=results.filter(p=>getType(p)===type);
+ const sort=document.getElementById("sortFilter").value;
+ if(sort==="low")results.sort((a,b)=>(getPrice(a)??Infinity)-(getPrice(b)??Infinity));
+ if(sort==="high")results.sort((a,b)=>(getPrice(b)??-Infinity)-(getPrice(a)??-Infinity));
+ if(sort==="beds")results.sort((a,b)=>(getBeds(b)??-1)-(getBeds(a)??-1));
+ visibleProperties=results;
+ document.getElementById("listingStat").textContent=results.length;
+ document.getElementById("resultsLabel").textContent=lastSearch?"Showing "+results.length+" RentCast listings for "+lastSearch:"Enter a location to begin";
+ renderProperties(results);
 }
-function renderListings(items,target){
-  const container=document.getElementById(target);
-  if(!items.length){container.innerHTML='<div class="empty">No residential listings match these filters.</div>';return;}
-  container.innerHTML=items.map(p=>{
-    const id=encodeURIComponent(p.id);
-    return `<article class="card">
-      <div class="photo">${p.photo?`<img src="${p.photo}" alt="Property photo" onerror="this.parentElement.textContent='Photo unavailable'">`:"Property photo unavailable"}</div>
-      <div class="card-body">
-        <div class="price">${money(p.price)}</div>
-        <div class="address">${escapeHTML(p.address)}</div>
-        <div class="city">${escapeHTML(p.city)} ${p.zip?"· "+escapeHTML(p.zip):""}</div>
-        <div class="features">
-          <span>${displayField(p.beds,"")} beds</span>
-          <span>${displayField(p.baths,"")} baths</span>
-          <span>${p.sqft?Number(p.sqft).toLocaleString()+" sqft":"Area not provided"}</span>
-        </div>
-        <div class="card-actions">
-          <button class="details-btn" onclick="showDetails('${id}')">Details</button>
-          <button class="analyze-btn" onclick="analyze('${id}')">Analyze deal</button>
-        </div>
-        <button class="save-btn" onclick="toggleSave('${id}')">${saved.includes(p.id)?"♥ Saved — remove":"♡ Save property"}</button>
-      </div>
-    </article>`;
-  }).join("");
-}
-function findProperty(id){
-  return properties.find(p=>p.id===decodeURIComponent(String(id)))||
-    savedProperties().find(p=>p.id===decodeURIComponent(String(id)));
-}
-function savedProperties(){
-  return properties.filter(p=>saved.includes(p.id));
-}
-function showDetails(id){
-  const p=findProperty(id);if(!p)return;
-  const agent=p.raw.listingAgent||{};
-  const office=p.raw.listingOffice||{};
-  const phone=agent.phone||office.phone||"";
-  document.getElementById("modalContent").innerHTML=`
-    <div class="eyebrow">${escapeHTML(p.type)} · Listing details</div>
-    <h2>${escapeHTML(p.address)}</h2><p>${escapeHTML(p.city)} ${escapeHTML(p.zip)}</p>
-    ${p.photo?`<img style="width:100%;max-height:250px;object-fit:cover;border-radius:10px" src="${p.photo}" alt="Property photo">`:""}
-    <div class="analysis-grid">
-      <div class="analysis-item"><span>Listing price</span><strong>${money(p.price)}</strong></div>
-      <div class="analysis-item"><span>Property type</span><strong>${escapeHTML(p.type)}</strong></div>
-      <div class="analysis-item"><span>Bedrooms</span><strong>${displayField(p.beds)}</strong></div>
-      <div class="analysis-item"><span>Bathrooms</span><strong>${displayField(p.baths)}</strong></div>
-      <div class="analysis-item"><span>Living area</span><strong>${p.sqft?Number(p.sqft).toLocaleString()+" sqft":"Not provided"}</strong></div>
-      <div class="analysis-item"><span>Year built</span><strong>${displayField(p.raw.yearBuilt)}</strong></div>
-    </div>
-    <p>Listing agent: ${escapeHTML(agent.name||"Not provided")}</p>
-    ${phone?`<a class="contact-link" href="tel:${String(phone).replace(/[^0-9+]/g,"")}">☎ Call listing contact: ${escapeHTML(phone)}</a>`:"<p>Agent phone number not provided by the listing source.</p>"}
-    <div class="disclaimer">Confirm listing availability and all property details with the listing contact.</div>`;
-  openModal();
-}
-function analyze(id){
-  const p=findProperty(id);if(!p)return;
-  document.getElementById("modalContent").innerHTML=`
-    <div class="eyebrow">Investor deal analyzer</div>
-    <h2>${escapeHTML(p.address)}</h2>
-    <p>${escapeHTML(p.city)} · Asking price: ${money(p.price)}</p>
-    <div class="free-box">
-      <h3>Free deal preview</h3>
-      <label>Purchase price ($)</label>
-      <input id="dealBuy" type="number" min="0" value="${p.price||0}" oninput="updatePreview()">
-      <label>Estimated resale value / ARV ($)</label>
-      <input id="dealArv" type="number" min="0" placeholder="Enter your estimated resale value" oninput="updatePreview()">
-      <div style="font-size:12px;color:#52647d;margin-top:14px">Potential spread before renovation, closing, holding, and selling expenses:</div>
-      <div class="spread" id="dealSpread">Enter an ARV</div>
-      <p style="font-size:11px">This is not your final profit. Expenses have not been deducted.</p>
-    </div>
-    <div class="premium">
-      <div class="premium-content">
-        <h3>Premium deal breakdown</h3>
-        <p>Detailed estimated costs and projected returns</p>
-        <div class="cost-row"><span>Purchase price</span><b>$250,000</b></div>
-        <div class="cost-row"><span>Renovation materials</span><b>$18,000</b></div>
-        <div class="cost-row"><span>Labor costs</span><b>$12,000</b></div>
-        <div class="cost-row"><span>Permits and inspections</span><b>$1,500</b></div>
-        <div class="cost-row"><span>Purchase closing costs</span><b>$3,000</b></div>
-        <div class="cost-row"><span>Holding costs and utilities</span><b>$4,500</b></div>
-        <div class="cost-row"><span>Property taxes and insurance</span><b>$2,500</b></div>
-        <div class="cost-row"><span>Agent commissions and resale costs</span><b>$15,000</b></div>
-        <div class="cost-row"><span>Contingency budget</span><b>$3,000</b></div>
-        <div class="cost-row"><span>Estimated resale value</span><b>$350,000</b></div>
-        <div class="cost-row"><span>Projected net profit</span><b>$40,500</b></div>
-        <div class="cost-row"><span>Return on investment</span><b>13.8%</b></div>
-      </div>
-      <div class="lock-overlay">
-        <div class="lock-card">
-          <div style="font-size:28px">🔒</div>
-          <h3>Unlock Premium Analysis</h3>
-          <p>Get the full renovation, labor, materials, holding-cost, closing-cost, and profit breakdown.</p>
-          <button class="unlock" onclick="premiumMessage()">Unlock Premium</button>
-          <p style="margin-bottom:0">Membership pricing coming soon.</p>
-        </div>
-      </div>
-    </div>
-    <div class="disclaimer">The blurred figures are sample placeholders, not calculations for this property. Premium analysis and payments are not active yet. Verify all estimates independently.</div>`;
-  openModal();
-  updatePreview();
-}
-function updatePreview(){
-  const buy=Number(document.getElementById("dealBuy")?.value)||0;
-  const arv=Number(document.getElementById("dealArv")?.value)||0;
-  const spread=document.getElementById("dealSpread");
-  if(!spread)return;
-  if(!arv){spread.textContent="Enter an ARV";return;}
-  const result=arv-buy;
-  spread.textContent=(result<0?"−":"")+money(Math.abs(result));
-  spread.style.color=result>=0?"#13865e":"#c23b3b";
-}
-function premiumMessage(){
-  alert("Premium memberships and payments are not active yet. Payment setup is the next step.");
-}
-function toggleSave(id){
-  const decoded=decodeURIComponent(String(id));
-  saved=saved.includes(decoded)?saved.filter(x=>x!==decoded):[...saved,decoded];
-  localStorage.setItem("idrSaved",JSON.stringify(saved));
-  updateSaved();
-  renderListings(visibleProperties,"listings");
-}
-function updateSaved(){
-  document.getElementById("savedCount").textContent=saved.length;
-  const items=savedProperties();
-  renderListings(items,"savedListings");
-}
-function escapeHTML(value){
-  return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function openModal(){document.getElementById("modalBackdrop").classList.add("open")}
-function closeModal(){document.getElementById("modalBackdrop").classList.remove("open")}
-function backdropClose(e){if(e.target.id==="modalBackdrop")closeModal()}
-document.getElementById("locationSearch").addEventListener("keydown",e=>{if(e.key==="Enter")applyFilters()});
 ["typeFilter","priceFilter","bedFilter","sortFilter"].forEach(id=>document.getElementById(id).addEventListener("change",filterListings));
-updateSaved();
+
+function propertyCard(p,saved=false){
+ const id=propertyId(p),price=getPrice(p),beds=getBeds(p),baths=getBaths(p),area=getArea(p),img=getPhoto(p);
+ const isSaved=savedProperties.some(x=>x.id===id);
+ return `<article class="property">
+  <div class="photo">${img?`<img src="${escapeHTML(img)}" alt="Property listing photo" loading="lazy" onerror="this.parentElement.textContent='No listing photo provided'">`:"No listing photo provided"}</div>
+  <div class="property-body">
+   <span class="badge">${saved?"SAVED PROPERTY":"RENTCAST LISTING"}</span>
+   <div class="address">${escapeHTML(getAddress(p))}</div>
+   <div class="price">${price!=null&&Number.isFinite(price)?money(price):"Price unavailable"}</div>
+   <div class="meta"><span>${displayValue(beds)} beds</span><span>${displayValue(baths)} baths</span><span>${displayValue(area," sq ft")}</span></div>
+   <div class="meta"><span>${escapeHTML(getType(p))}</span><span>${p.yearBuilt?"Built "+escapeHTML(p.yearBuilt):"Year built not provided"}</span></div>
+   <div class="property-actions">
+    <button class="secondary" onclick="showDetailsById('${encodeURIComponent(id)}')">Details</button>
+    <button class="primary" onclick="openAnalyzerById('${encodeURIComponent(id)}')">Analyze deal</button>
+   </div>
+   <button class="secondary" style="width:100%;margin-top:8px" onclick="toggleSaveById('${encodeURIComponent(id)}')">${saved?"Remove saved property":isSaved?"★ Saved — remove":"☆ Save property"}</button>
+  </div>
+ </article>`;
+}
+
+function renderProperties(items){
+ document.getElementById("propertyGrid").innerHTML=items.length?items.map(p=>propertyCard(p)).join(""):'<div class="empty">No residential listings found. Try another location or adjust your filters.</div>';
+}
+function findCurrentProperty(encoded){
+ const id=decodeURIComponent(String(encoded));
+ return properties.find(p=>propertyId(p)===id)||savedProperties.find(x=>x.id===id)?.property||null;
+}
+function showDetailsById(encoded){
+ const p=findCurrentProperty(encoded);
+ if(!p)return;
+ const img=getPhoto(p),agent=p.listingAgent?.name||p.listingAgentName||"Not provided";
+ document.getElementById("detailsContent").innerHTML=`
+  <span class="badge">RENTCAST LISTING · ${escapeHTML(getType(p))}</span>
+  <h2 style="margin:14px 0 5px">${escapeHTML(getAddress(p))}</h2>
+  <p style="color:var(--muted)">${escapeHTML([p.city,p.state,p.zipCode].filter(Boolean).join(", "))}</p>
+  ${img?`<img class="modal-image" src="${escapeHTML(img)}" alt="Property photo" onerror="this.style.display='none'">`:""}
+  <div class="detail-grid">
+   <div class="detail-item"><small>Listing price</small><strong>${getPrice(p)!=null?money(getPrice(p)):"Not provided"}</strong></div>
+   <div class="detail-item"><small>Property type</small><strong>${escapeHTML(getType(p))}</strong></div>
+   <div class="detail-item"><small>Bedrooms</small><strong>${displayValue(getBeds(p))}</strong></div>
+   <div class="detail-item"><small>Bathrooms</small><strong>${displayValue(getBaths(p))}</strong></div>
+   <div class="detail-item"><small>Living area</small><strong>${displayValue(getArea(p)," sq ft")}</strong></div>
+   <div class="detail-item"><small>Year built</small><strong>${escapeHTML(p.yearBuilt||"Not provided")}</strong></div>
+   <div class="detail-item"><small>Days on market</small><strong>${escapeHTML(p.daysOnMarket??"Not provided")}</strong></div>
+   <div class="detail-item"><small>Listed date</small><strong>${escapeHTML(p.listedDate||"Not provided")}</strong></div>
+   <div class="detail-item"><small>Listing agent</small><strong>${escapeHTML(agent)}</strong></div>
+  </div>
+  <div class="disclaimer">Listing information is supplied by RentCast. Confirm availability, pricing, property condition, and all details independently.</div>`;
+ openModal("detailsModal");
+}
+
+function toggleSaveById(encoded){
+ const id=decodeURIComponent(String(encoded));
+ const p=properties.find(x=>propertyId(x)===id);
+ const i=savedProperties.findIndex(x=>x.id===id);
+ if(i>=0)savedProperties.splice(i,1);
+ else if(p)savedProperties.push({id,property:p});
+ saveSavedProperties();
+ updateSavedUI();
+ renderProperties(visibleProperties);
+}
+function renderSavedProperties(){
+ const grid=document.getElementById("savedGrid");
+ grid.innerHTML=savedProperties.length?savedProperties.map(x=>propertyCard(x.property,true)).join(""):'<div class="empty">You haven\'t saved any properties yet. Save a property to see it here.</div>';
+}
+
+function openAnalyzerById(encoded){
+ const p=findCurrentProperty(encoded);
+ if(!p)return;
+ document.getElementById("analysisAddress").textContent=getAddress(p);
+ document.getElementById("purchaseInput").value=getPrice(p)??"";
+ document.getElementById("arvInput").value="";
+ document.getElementById("materialsInput").value=0;
+ document.getElementById("laborInput").value=0;
+ document.getElementById("permitsInput").value=0;
+ document.getElementById("contingencyInput").value=10;
+ document.getElementById("closingInput").value=0;
+ document.getElementById("holdingInput").value=0;
+ document.getElementById("sellingInput").value=6;
+ document.getElementById("analysisResults").style.display="none";
+ openModal("analysisModal");
+}
+
+function calculateDeal(){
+ const v=id=>Number(document.getElementById(id).value||0);
+ const purchase=v("purchaseInput"),arv=v("arvInput");
+ const materials=v("materialsInput"),labor=v("laborInput"),permits=v("permitsInput");
+ const contRate=v("contingencyInput")/100,closing=v("closingInput");
+ const holding=v("holdingInput"),sellRate=v("sellingInput")/100;
+ if([purchase,arv,materials,labor,permits,contRate,closing,holding,sellRate].some(x=>!Number.isFinite(x)||x<0)||purchase<=0||arv<=0||contRate>1||sellRate>1){
+  alert("Enter a valid purchase price and ARV. Costs must be zero or higher and percentages must be 0–100.");
+  return;
+ }
+ const renovation=materials+labor+permits;
+ const contingency=renovation*contRate;
+ const selling=arv*sellRate;
+ const total=purchase+renovation+contingency+closing+holding+selling;
+ const profit=arv-total;
+ document.getElementById("arvResult").textContent=money(arv);
+ document.getElementById("profitResult").textContent=money(profit);
+ document.getElementById("profitResult").style.color=profit>=0?"var(--green)":"var(--red)";
+ const vals={
+  lockedPurchase:purchase,lockedMaterials:materials,lockedLabor:labor,
+  lockedPermits:permits,lockedContingency:contingency,lockedClosing:closing,
+  lockedHolding:holding,lockedSelling:selling,lockedTotal:total,
+  lockedArv:arv,lockedProfit:profit
+ };
+ Object.entries(vals).forEach(([id,n])=>document.getElementById(id).textContent=money(n));
+ document.getElementById("analysisResults").style.display="block";
+}
+
+function openModal(id){document.getElementById(id).classList.add("open")}
+function closeModal(id){document.getElementById(id).classList.remove("open")}
+function closeOnBackdrop(e,id){if(e.target.id===id)closeModal(id)}
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){closeModal("detailsModal");closeModal("analysisModal")}
+});
+updateSavedUI();
 </script>
 </body>
 </html>
