@@ -3,87 +3,327 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Investor Deal Radar</title>
+<title>Investor Deal Radar | Find Your Next Deal</title>
+<meta name="description" content="Find residential investment properties and analyze potential real estate deals.">
+
 <style>
-:root {
-  --bg:#080f1d; --panel:#111e30; --panel2:#0c1727;
-  --border:#263951; --blue:#4d8dff; --text:#f4f7fc;
-  --muted:#9aacc4; --green:#35c98b; --red:#ff7272;
+:root{
+  --blue:#2563eb;
+  --blue-dark:#1747b8;
+  --blue-light:#eff6ff;
+  --bg:#f5f8fd;
+  --white:#fff;
+  --text:#17243a;
+  --muted:#718096;
+  --border:#e2e8f0;
+  --green:#159766;
+  --red:#dc4545;
+  --shadow:0 8px 28px rgba(25,55,100,.07);
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
-header{height:78px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;background:#080f1df2;z-index:5}
-.logo{font-size:21px;font-weight:800}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,Arial,sans-serif;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+header{
+  height:76px;
+  padding:0 5%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:white;
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+.logo{font-size:20px;font-weight:850;letter-spacing:-.6px}
 .logo span{color:var(--blue)}
-.tagline{font-size:10px;letter-spacing:2px;color:var(--muted);margin-top:5px}
-nav{display:flex;gap:25px;align-items:center}
-nav a{color:var(--muted);text-decoration:none;font-size:14px}
-button{cursor:pointer;border:0;border-radius:9px;padding:13px 19px;font-weight:700;font-size:14px}
-.primary{background:var(--blue);color:white}
-.secondary{background:#1c2c42;color:white;border:1px solid var(--border)}
-main{max-width:1400px;margin:auto;padding:35px 4% 70px}
-.intro{margin-bottom:25px;color:#b5c5da;line-height:1.6}
-.search-panel{background:var(--panel);border:1px solid var(--border);padding:20px;border-radius:15px}
+.tagline{font-size:9px;letter-spacing:1.8px;color:var(--muted);margin-top:4px}
+nav{display:flex;align-items:center;gap:25px}
+nav a{color:#53647c;text-decoration:none;font-size:13px;font-weight:600}
+nav a:hover{color:var(--blue)}
+button.primary{
+  background:var(--blue);
+  color:white;
+  border:0;
+  border-radius:9px;
+  padding:13px 18px;
+  font-weight:700;
+}
+button.primary:hover{background:var(--blue-dark)}
+button.secondary{
+  background:white;
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:11px 15px;
+  font-weight:700;
+}
+button:disabled{opacity:.6;cursor:wait}
+main{max-width:1380px;margin:auto;padding:38px 4% 75px}
+.hero{margin-bottom:28px}
+.eyebrow{
+  color:var(--blue);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+h1{
+  font-size:clamp(34px,5vw,54px);
+  letter-spacing:-2px;
+  line-height:1.1;
+  margin:13px 0;
+}
+h1 span{color:var(--blue)}
+.intro{color:var(--muted);line-height:1.65;max-width:700px}
+.search-panel{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  box-shadow:var(--shadow);
+  margin-top:24px;
+}
 .search-row{display:flex;gap:12px}
-input,select{background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:white;padding:14px;font-size:15px;width:100%;min-width:0}
-input::placeholder{color:#8294aa}
+input,select{
+  width:100%;
+  min-width:0;
+  padding:14px;
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--text);
+  border-radius:9px;
+  outline:none;
+}
+input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2563eb16}
 .search-row input{flex:1}
-.filters{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:14px}
-.filter label{display:block;color:var(--muted);font-size:12px;margin-bottom:8px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:38px 0}
-.stat{background:var(--panel);border:1px solid var(--border);padding:20px;border-radius:12px}
-.stat strong{font-size:24px;display:block;margin-bottom:5px}
+.filters{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:13px;
+  margin-top:16px;
+}
+.filter label,.calc-grid label{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin:28px 0 40px;
+}
+.stat{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:20px;
+  box-shadow:var(--shadow);
+}
+.stat strong{display:block;font-size:24px;margin-bottom:5px}
 .stat small{color:var(--muted)}
-.section-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:17px}
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:18px;
+}
 .section-head h2{margin:0;font-size:23px}
 #resultsLabel{font-size:13px;color:var(--muted)}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
-.property{background:var(--panel);border:1px solid var(--border);border-radius:13px;overflow:hidden}
-.photo{height:175px;background:linear-gradient(135deg,#172943,#0c1727);display:flex;align-items:center;justify-content:center;color:#8da3bf;font-size:13px;overflow:hidden}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+.property{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  transition:transform .2s,box-shadow .2s;
+}
+.property:hover{transform:translateY(-3px);box-shadow:0 12px 32px #193b6814}
+.photo{
+  height:205px;
+  background:linear-gradient(135deg,#eaf2ff,#f5f8fd);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  position:relative;
+}
 .photo img{width:100%;height:100%;object-fit:cover}
-.property-body{padding:17px}
-.badge{display:inline-block;background:#1b3453;color:#8eb8ff;padding:6px 9px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.5px}
-.address{font-size:17px;font-weight:700;margin:12px 0 7px}
-.price{font-size:23px;font-weight:800;color:white}
-.meta{display:flex;flex-wrap:wrap;gap:12px;color:var(--muted);font-size:12px;margin:13px 0}
-.property-actions{display:flex;gap:8px;margin-top:15px}
-.property-actions button{flex:1;padding:11px 7px;font-size:12px}
-.empty{background:var(--panel);border-radius:12px;padding:55px 20px;text-align:center;color:var(--muted);grid-column:1/-1}
-.notice{font-size:12px;color:var(--muted);line-height:1.6;margin-top:25px}
-.modal-backdrop{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:15px;z-index:20}
-.modal{background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:24px;width:100%;max-width:650px;max-height:90vh;overflow:auto}
-.modal-top{display:flex;justify-content:space-between;align-items:center;gap:15px}
-.modal-top h2{margin:0}
-.close{background:#263951;color:white;padding:8px 12px}
-.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:20px 0}
-.calc-grid label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
-.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.result{background:var(--panel2);padding:18px;border:1px solid var(--border);border-radius:10px}
+.photo-placeholder{text-align:center;color:#8195b1;font-size:13px}
+.photo-placeholder strong{display:block;font-size:30px;margin-bottom:7px;color:#9bb3d5}
+.listing-tag{
+  position:absolute;
+  top:12px;
+  left:12px;
+  background:white;
+  color:var(--blue);
+  border:1px solid #dbeafe;
+  border-radius:6px;
+  padding:6px 9px;
+  font-size:10px;
+  font-weight:800;
+}
+.property-body{padding:18px}
+.price{font-size:24px;font-weight:850;margin-bottom:8px}
+.address{font-size:15px;font-weight:700;line-height:1.4}
+.city{font-size:12px;color:var(--muted);margin-top:5px}
+.meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  color:#53647c;
+  font-size:12px;
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+}
+.property-actions{display:flex;gap:9px;margin-top:14px}
+.property-actions button{flex:1;font-size:12px;padding:11px 7px}
+.save-button{width:100%;margin-top:9px}
+.empty{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:55px 20px;
+  text-align:center;
+  color:var(--muted);
+  grid-column:1/-1;
+}
+.notice{font-size:12px;color:var(--muted);line-height:1.7;margin-top:25px}
+#how{margin-top:55px}
+#how h2{font-size:23px}
+footer{
+  background:white;
+  border-top:1px solid var(--border);
+  padding:24px 5%;
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* Modals */
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:#14243b99;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  z-index:30;
+}
+.modal{
+  width:100%;
+  max-width:760px;
+  max-height:92vh;
+  overflow:auto;
+  background:white;
+  border-radius:17px;
+  padding:25px;
+  box-shadow:0 25px 80px #14243b40;
+}
+.modal-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:18px;
+}
+.modal-top h2{margin:0;font-size:23px}
+.close{background:#f0f4fa;border:0;border-radius:8px;padding:9px 13px}
+.gallery-main{
+  height:300px;
+  border-radius:12px;
+  overflow:hidden;
+  background:linear-gradient(135deg,#eaf2ff,#f5f8fd);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#8195b1;
+  text-align:center;
+}
+.gallery-main img{width:100%;height:100%;object-fit:cover}
+.gallery-thumbs{display:flex;gap:8px;overflow:auto;margin-top:10px}
+.gallery-thumbs img{
+  width:75px;height:60px;object-fit:cover;
+  border-radius:7px;cursor:pointer;border:2px solid transparent;
+}
+.gallery-thumbs img.active{border-color:var(--blue)}
+.detail-price{font-size:28px;font-weight:850;margin:20px 0 6px}
+.detail-address{color:var(--muted);font-size:14px}
+.detail-features{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+  margin:20px 0;
+}
+.detail-feature{
+  background:var(--blue-light);
+  padding:13px 8px;
+  border-radius:9px;
+  text-align:center;
+}
+.detail-feature strong{display:block;font-size:17px}
+.detail-feature small{color:var(--muted);font-size:11px}
+.detail-section{border-top:1px solid var(--border);padding:17px 0}
+.detail-section h3{font-size:15px;margin:0 0 12px}
+.detail-line{font-size:13px;color:#53647c;margin:8px 0}
+.contact-actions{display:flex;gap:10px;flex-wrap:wrap}
+.contact-actions a{
+  text-decoration:none;
+  background:var(--blue);
+  color:white;
+  padding:12px 16px;
+  border-radius:9px;
+  font-size:13px;
+  font-weight:700;
+}
+.contact-actions .muted-link{background:var(--blue-light);color:var(--blue)}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.result{
+  background:var(--blue-light);
+  border:1px solid #dbeafe;
+  padding:17px;
+  border-radius:11px;
+}
 .result small{color:var(--muted)}
-.result strong{display:block;font-size:24px;margin-top:8px}
+.result strong{display:block;font-size:23px;margin-top:8px}
 .profit{color:var(--green)}
-.breakdown{position:relative;margin-top:18px;background:var(--panel2);padding:18px;border-radius:10px}
-.breakdown-content{filter:blur(5px);user-select:none;pointer-events:none;line-height:2}
-.lock-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:15px;background:#09132199}
-.lock-overlay strong{font-size:18px}
-.lock-overlay p{font-size:12px;color:#c0cce0}
-footer{border-top:1px solid var(--border);padding:22px 5%;color:var(--muted);font-size:12px}
-@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:950px){.grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:650px){
- header{padding:0 4%;height:68px}nav{gap:10px}nav a{font-size:12px}
- nav a:nth-child(2){display:none}
- main{padding:25px 4%}
- .search-row{flex-direction:column}
- .filters{grid-template-columns:1fr 1fr}
- .stats{gap:8px}.stat{padding:13px}.stat strong{font-size:19px}
- .grid{grid-template-columns:1fr}
- .section-head{align-items:flex-start;flex-direction:column}
- .calc-grid{grid-template-columns:1fr}
+  header{padding:0 4%;height:68px}
+  nav{gap:10px}
+  nav a{display:none}
+  main{padding:25px 4%}
+  .search-row{flex-direction:column}
+  .filters{grid-template-columns:1fr 1fr}
+  .grid{grid-template-columns:1fr}
+  .stats{gap:8px}
+  .stat{padding:13px}
+  .stat strong{font-size:18px}
+  .section-head{align-items:flex-start;flex-direction:column}
+  .detail-features{grid-template-columns:1fr 1fr}
+  .calc-grid{grid-template-columns:1fr}
+  .gallery-main{height:220px}
 }
 </style>
 </head>
-<body>
 
+<body>
 <header>
   <div>
     <div class="logo">INVESTOR <span>DEAL RADAR</span></div>
@@ -98,12 +338,16 @@ footer{border-top:1px solid var(--border);padding:22px 5%;color:var(--muted);fon
 </header>
 
 <main>
-  <p class="intro">Find residential properties and evaluate their potential as investment deals. Search markets, compare numbers, and make smarter decisions.</p>
+  <section class="hero">
+    <div class="eyebrow">Built for real estate investors</div>
+    <h1>Find properties.<br><span>Find your next deal.</span></h1>
+    <p class="intro">Explore residential properties, compare opportunities, and analyze potential investment returns in one place.</p>
+  </section>
 
   <section class="search-panel">
     <form id="searchForm">
       <div class="search-row">
-        <input id="locationSearch" placeholder="Enter city, state, or ZIP code (e.g. Richmond, VA)" autocomplete="off">
+        <input id="locationSearch" placeholder="Enter city, state, or ZIP code (e.g. Philadelphia, PA)" autocomplete="off">
         <button class="primary" id="searchButton" type="submit">Search properties</button>
       </div>
     </form>
@@ -115,7 +359,7 @@ footer{border-top:1px solid var(--border);padding:22px 5%;color:var(--muted);fon
           <option value="Single Family">Single family</option>
           <option value="Condo">Condo</option>
           <option value="Townhouse">Townhouse</option>
-          <option value="Multi-Family">Multi-family</option>
+          <option value="Multi">Multi-family</option>
         </select>
       </div>
       <div class="filter">
@@ -152,16 +396,16 @@ footer{border-top:1px solid var(--border);padding:22px 5%;color:var(--muted);fon
   </section>
 
   <section class="stats">
-    <div class="stat"><strong id="marketStat">Nationwide</strong><small>Search direction</small></div>
-    <div class="stat"><strong id="listingStat">0</strong><small>Live listings found</small></div>
-    <div class="stat"><strong id="savedStat">0</strong><small>Properties saved</small></div>
+    <div class="stat"><strong id="marketStat">Nationwide</strong><small>Search market</small></div>
+    <div class="stat"><strong id="listingStat">0</strong><small>Listings found</small></div>
+    <div class="stat"><strong id="savedStat">0</strong><small>Saved properties</small></div>
   </section>
 
   <section id="properties">
     <div class="section-head">
       <div>
         <h2>Explore investment properties</h2>
-        <p style="color:var(--muted);font-size:13px;margin-bottom:0">Browse properties and evaluate their potential.</p>
+        <p class="intro">Browse properties and evaluate their potential.</p>
       </div>
       <span id="resultsLabel">Enter a location to begin</span>
     </div>
@@ -170,10 +414,18 @@ footer{border-top:1px solid var(--border);padding:22px 5%;color:var(--muted);fon
     </div>
   </section>
 
-  <section id="saved" style="margin-top:55px">
+  <section id="saved">
+    <h2>Saved properties</h2>
+    <p class="intro">Keep track of properties you want to research.</p>
+    <div class="grid" id="savedGrid">
+      <div class="empty">You haven't saved any properties yet.</div>
+    </div>
+  </section>
+
+  <section id="how">
     <h2>How it works</h2>
-    <p class="intro">Search properties, save opportunities, and use the deal calculator to estimate possible investment returns.</p>
-    <div id="how" class="notice">
+    <p class="intro">Search properties, save opportunities, and use the deal analyzer to estimate possible investment returns.</p>
+    <div class="notice">
       Listings are provided by RentCast. Availability, pricing, and property details may change. Verify all information independently. ARV, repair costs, and profit calculations are estimates and are not guaranteed.
     </div>
   </section>
@@ -181,13 +433,25 @@ footer{border-top:1px solid var(--border);padding:22px 5%;color:var(--muted);fon
 
 <footer>Investor Deal Radar · Property data provided by RentCast · Not financial or real estate investment advice.</footer>
 
-<div class="modal-backdrop" id="analysisModal">
+<!-- Property details -->
+<div class="modal-backdrop" id="detailsModal" onclick="backdropClose(event,'detailsModal')">
+  <div class="modal">
+    <div class="modal-top">
+      <h2>Property details</h2>
+      <button class="close" onclick="closeModal('detailsModal')">✕</button>
+    </div>
+    <div id="detailsContent"></div>
+  </div>
+</div>
+
+<!-- Deal analyzer -->
+<div class="modal-backdrop" id="analysisModal" onclick="backdropClose(event,'analysisModal')">
   <div class="modal">
     <div class="modal-top">
       <h2>Deal Analyzer</h2>
-      <button class="close" onclick="closeModal()">✕</button>
+      <button class="close" onclick="closeModal('analysisModal')">✕</button>
     </div>
-    <p id="analysisAddress" style="color:var(--muted)"></p>
+    <p id="analysisAddress" class="intro"></p>
     <div class="calc-grid">
       <div>
         <label>Purchase price ($)</label>
@@ -207,275 +471,344 @@ footer{border-top:1px solid var(--border);padding:22px 5%;color:var(--muted);fon
       </div>
     </div>
     <button class="primary" style="width:100%" onclick="calculateDeal()">Calculate estimated deal</button>
-    <div id="analysisResults" style="display:none;margin-top:20px">
+    <div id="analysisResults" style="display:none">
       <div class="result-grid">
         <div class="result"><small>Estimated ARV</small><strong id="arvResult">—</strong></div>
-        <div class="result"><small>Estimated profit</small><strong class="profit" id="profitResult">—</strong></div>
+        <div class="result"><small>Estimated profit</small><strong id="profitResult" class="profit">—</strong></div>
       </div>
-      <div class="breakdown">
-        <div class="breakdown-content">
-          Purchase price: $000,000<br>
-          Renovation costs: $00,000<br>
-          Closing and holding: $00,000<br>
-          Estimated resale value: $000,000<br>
-          Estimated profit: $00,000
-        </div>
-        <div class="lock-overlay">
-          <strong>🔒 Unlock the full deal breakdown</strong>
-          <p>Detailed costs, calculations, and investment analysis will be available with a premium membership.</p>
-          <button class="secondary" onclick="alert('Premium subscriptions are not active yet. Payment and account setup are coming next.')">Premium access — coming soon</button>
-        </div>
-      </div>
-      <p class="notice">This is a basic calculator using the numbers you entered. It does not independently verify ARV, repair costs, or resale value.</p>
+      <p class="notice">Estimated profit = resale value minus purchase price, repairs, and closing/holding costs. This is a basic estimate, not a guarantee.</p>
     </div>
   </div>
 </div>
 
 <script>
 let properties = [];
-let saved = JSON.parse(localStorage.getItem("idr_saved") || "[]");
+let visibleProperties = [];
+let saved = JSON.parse(localStorage.getItem("idr_saved") || "[]").map(String);
 let activeProperty = null;
 let lastSearch = "";
 
 const money = value => Number(value || 0).toLocaleString("en-US", {
-  style:"currency", currency:"USD", maximumFractionDigits:0
+  style:"currency",currency:"USD",maximumFractionDigits:0
 });
 
-function titleCaseCity(value) {
-  return value.toLowerCase().replace(/\b[a-z]/g, letter => letter.toUpperCase());
+function titleCaseCity(value){
+  return value.toLowerCase().replace(/\b[a-z]/g,letter=>letter.toUpperCase());
 }
 
-function getSearchParts(value) {
-  const q = value.trim();
-  if (/^\d{5}$/.test(q)) return {zipCode:q};
-
-  const comma = q.match(/^(.+?),\s*([a-z]{2})$/i);
-  if (comma) {
-    return {
-      city:titleCaseCity(comma[1].trim()),
-      state:comma[2].toUpperCase()
-    };
-  }
-
-  const stateAtEnd = q.match(/^(.+?)\s+([a-z]{2})$/i);
-  if (stateAtEnd) {
-    return {
-      city:titleCaseCity(stateAtEnd[1].trim()),
-      state:stateAtEnd[2].toUpperCase()
-    };
-  }
-
+function getSearchParts(value){
+  const q=value.trim();
+  if(/^\d{5}$/.test(q)) return {zipCode:q};
+  const comma=q.match(/^(.+?),\s*([a-z]{2})$/i);
+  if(comma) return {city:titleCaseCity(comma[1].trim()),state:comma[2].toUpperCase()};
+  const stateAtEnd=q.match(/^(.+?)\s+([a-z]{2})$/i);
+  if(stateAtEnd) return {city:titleCaseCity(stateAtEnd[1].trim()),state:stateAtEnd[2].toUpperCase()};
   return {city:titleCaseCity(q)};
 }
 
-function getAddress(p) {
+function getAddress(p){
   return p.formattedAddress || p.addressLine1 || p.address || "Address unavailable";
 }
-function getPrice(p) {
-  return Number(p.price || p.listPrice || 0);
+function getPrice(p){return Number(p.price || p.listPrice || 0)}
+function getBeds(p){return Number(p.bedrooms || 0)}
+function getBaths(p){return Number(p.bathrooms || 0)}
+function getArea(p){return Number(p.squareFootage || p.livingArea || 0)}
+function getType(p){return p.propertyType || p.type || "Residential"}
+function getId(p,index=0){
+  return String(p.id || p.listingId || p.formattedAddress || getAddress(p)+"-"+index);
 }
-function getBeds(p) {
-  return Number(p.bedrooms || 0);
+function getPhotos(p){
+  const photos=Array.isArray(p.photos)?p.photos:[];
+  const urls=photos.map(photo=>{
+    if(typeof photo==="string") return photo;
+    return photo?.url || photo?.href || photo?.src || "";
+  }).filter(Boolean);
+  const single=p.photo || p.image || p.imageUrl || p.primaryPhoto || p.thumbnail;
+  if(single && !urls.includes(single)) urls.unshift(single);
+  return urls;
 }
-function getBaths(p) {
-  return Number(p.bathrooms || 0);
+function getAgentPhone(p){
+  return p.listingAgent?.phone ||
+         p.listingAgent?.phoneNumber ||
+         p.listingOffice?.phone ||
+         p.listingOffice?.phoneNumber ||
+         p.agent?.phone ||
+         "";
 }
-function getArea(p) {
-  return Number(p.squareFootage || p.livingArea || 0);
+function getAgentName(p){
+  return p.listingAgent?.name ||
+         p.listingAgent?.fullName ||
+         p.agent?.name ||
+         "Not provided";
 }
-function getType(p) {
-  return p.propertyType || p.type || "Residential";
+function getAgentOffice(p){
+  return p.listingOffice?.name || "Not provided";
 }
-function getPhoto(p) {
-  return p.photo || p.image || p.imageUrl || p.primaryPhoto || p.thumbnail || "";
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g,char=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[char]);
+}
+function updateSavedCount(){
+  document.getElementById("savedCount").textContent=saved.length;
+  document.getElementById("savedStat").textContent=saved.length;
+  localStorage.setItem("idr_saved",JSON.stringify(saved));
+  renderSaved();
 }
 
-function updateSavedCount() {
-  document.getElementById("savedCount").textContent = saved.length;
-  document.getElementById("savedStat").textContent = saved.length;
-  document.getElementById("savedCount").textContent = saved.length;
-  localStorage.setItem("idr_saved", JSON.stringify(saved));
-}
-
-document.getElementById("searchForm").addEventListener("submit", async event => {
+document.getElementById("searchForm").addEventListener("submit",async event=>{
   event.preventDefault();
-  const search = document.getElementById("locationSearch").value.trim();
-  if (!search) {
-    alert("Enter a city, state, or ZIP code.");
-    return;
-  }
+  const search=document.getElementById("locationSearch").value.trim();
+  if(!search){alert("Enter a city, state, or ZIP code.");return}
 
-  lastSearch = search;
-  const button = document.getElementById("searchButton");
-  button.disabled = true;
-  button.textContent = "Searching...";
-  document.getElementById("resultsLabel").textContent = "Loading listings...";
-  document.getElementById("propertyGrid").innerHTML = '<div class="empty">Searching RentCast listings...</div>';
+  lastSearch=search;
+  const button=document.getElementById("searchButton");
+  button.disabled=true;
+  button.textContent="Searching...";
+  document.getElementById("resultsLabel").textContent="Loading listings...";
+  document.getElementById("propertyGrid").innerHTML='<div class="empty">Searching listings...</div>';
 
-  try {
-    const parts = getSearchParts(search);
-    const params = new URLSearchParams({...parts, limit:"50"});
-    const response = await fetch("/api/listings?" + params.toString());
-    const data = await response.json();
+  try{
+    const parts=getSearchParts(search);
+    const params=new URLSearchParams({...parts,limit:"50"});
+    const response=await fetch("/api/listings?"+params.toString());
+    const data=await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.error || data.message || "The listing provider returned an error.");
-    }
-    if (!Array.isArray(data)) {
-      throw new Error("Unexpected response from the listing provider.");
-    }
+    if(!response.ok) throw new Error(data.error || data.message || "The listing provider returned an error.");
+    if(!Array.isArray(data)) throw new Error("Unexpected response from the listing provider.");
 
-    properties = data;
-    document.getElementById("marketStat").textContent = search;
+    properties=data;
+    document.getElementById("marketStat").textContent=search;
     filterListings();
-  } catch (error) {
-    properties = [];
-    document.getElementById("listingStat").textContent = "0";
-    document.getElementById("resultsLabel").textContent = error.message;
-    document.getElementById("propertyGrid").innerHTML =
-      '<div class="empty">Could not load listings. ' + escapeHTML(error.message) + '</div>';
-  } finally {
-    button.disabled = false;
-    button.textContent = "Search properties";
+  }catch(error){
+    properties=[];
+    visibleProperties=[];
+    document.getElementById("listingStat").textContent="0";
+    document.getElementById("resultsLabel").textContent="Search error";
+    document.getElementById("propertyGrid").innerHTML=
+      '<div class="empty">Could not load listings: '+escapeHTML(error.message)+'</div>';
+  }finally{
+    button.disabled=false;
+    button.textContent="Search properties";
   }
 });
 
-function filterListings() {
-  let results = [...properties];
-  const maxPrice = Number(document.getElementById("priceFilter").value || 0);
-  const minBeds = Number(document.getElementById("bedFilter").value || 0);
-  const type = document.getElementById("typeFilter").value;
+function filterListings(){
+  let results=[...properties];
+  const maxPrice=Number(document.getElementById("priceFilter").value || 0);
+  const minBeds=Number(document.getElementById("bedFilter").value || 0);
+  const type=document.getElementById("typeFilter").value;
 
-  if (maxPrice) results = results.filter(p => getPrice(p) <= maxPrice);
-  if (minBeds) results = results.filter(p => getBeds(p) >= minBeds);
-  if (type) {
-    results = results.filter(p => getType(p).toLowerCase().includes(type.toLowerCase()));
+  if(maxPrice) results=results.filter(p=>getPrice(p)>0 && getPrice(p)<=maxPrice);
+  if(minBeds) results=results.filter(p=>getBeds(p)>=minBeds);
+  if(type){
+    results=results.filter(p=>{
+      const actual=getType(p).toLowerCase();
+      if(type==="Multi") return actual.includes("multi");
+      return actual.includes(type.toLowerCase());
+    });
   }
 
-  const sort = document.getElementById("sortFilter").value;
-  if (sort === "low") results.sort((a,b) => getPrice(a)-getPrice(b));
-  if (sort === "high") results.sort((a,b) => getPrice(b)-getPrice(a));
-  if (sort === "beds") results.sort((a,b) => getBeds(b)-getBeds(a));
+  const sort=document.getElementById("sortFilter").value;
+  if(sort==="low") results.sort((a,b)=>getPrice(a)-getPrice(b));
+  if(sort==="high") results.sort((a,b)=>getPrice(b)-getPrice(a));
+  if(sort==="beds") results.sort((a,b)=>getBeds(b)-getBeds(a));
 
-  document.getElementById("listingStat").textContent = results.length;
-  document.getElementById("resultsLabel").textContent =
-    "Showing " + results.length + " RentCast listings for " + lastSearch;
-
+  visibleProperties=results;
+  document.getElementById("listingStat").textContent=results.length;
+  document.getElementById("resultsLabel").textContent=
+    "Showing "+results.length+" listings for "+lastSearch;
   renderProperties(results);
 }
 
-["typeFilter","priceFilter","bedFilter","sortFilter"].forEach(id => {
-  document.getElementById(id).addEventListener("change", filterListings);
+["typeFilter","priceFilter","bedFilter","sortFilter"].forEach(id=>{
+  document.getElementById(id).addEventListener("change",filterListings);
 });
 
-function renderProperties(items) {
-  const grid = document.getElementById("propertyGrid");
+function propertyCard(p,index){
+  const id=getId(p,index);
+  const photos=getPhotos(p);
+  const image=photos[0];
+  const address=getAddress(p);
+  const isSaved=saved.includes(id);
 
-  if (!items.length) {
-    grid.innerHTML = '<div class="empty">No listings found. Try another city, state, or ZIP code, or adjust your filters.</div>';
+  return `
+    <article class="property">
+      <div class="photo">
+        ${image
+          ? `<img src="${escapeHTML(image)}" alt="Listing photo" loading="lazy" onerror="this.parentElement.innerHTML='<div class=photo-placeholder><strong>⌂</strong>Photo unavailable</div>'">`
+          : `<div class="photo-placeholder"><strong>⌂</strong>Listing photo unavailable</div>`}
+        <span class="listing-tag">RENTCAST LISTING</span>
+      </div>
+      <div class="property-body">
+        <div class="price">${getPrice(p)?money(getPrice(p)):"Price unavailable"}</div>
+        <div class="address">${escapeHTML(address)}</div>
+        <div class="city">${escapeHTML([p.city,p.state,p.zipCode].filter(Boolean).join(", "))}</div>
+        <div class="meta">
+          <span>${getBeds(p)||"—"} beds</span>
+          <span>${getBaths(p)||"—"} baths</span>
+          <span>${getArea(p)?getArea(p).toLocaleString()+" sq ft":"Area unavailable"}</span>
+        </div>
+        <div class="meta">
+          <span>${escapeHTML(getType(p))}</span>
+          <span>${p.yearBuilt?"Built "+escapeHTML(p.yearBuilt):""}</span>
+        </div>
+        <div class="property-actions">
+          <button class="secondary" onclick="showDetails(${index})">View details</button>
+          <button class="primary" onclick="openAnalyzer(${index})">Analyze deal</button>
+        </div>
+        <button class="secondary save-button" onclick="toggleSave('${encodeURIComponent(id)}')">
+          ${isSaved?"★ Saved":"☆ Save property"}
+        </button>
+      </div>
+    </article>`;
+}
+
+function renderProperties(items){
+  const grid=document.getElementById("propertyGrid");
+  if(!items.length){
+    grid.innerHTML='<div class="empty">No properties found. Try another location or adjust your filters.</div>';
     return;
   }
-
-  grid.innerHTML = items.map((p,index) => {
-    const address = getAddress(p);
-    const price = getPrice(p);
-    const image = getPhoto(p);
-    const id = String(p.id || p.listingId || address + "-" + index);
-
-    return `
-      <article class="property">
-        <div class="photo">
-          ${image ? `<img src="${escapeHTML(image)}" alt="Property photo" onerror="this.parentElement.textContent='No listing photo provided'">` : "No listing photo provided"}
-        </div>
-        <div class="property-body">
-          <span class="badge">RENTCAST LISTING</span>
-          <div class="address">${escapeHTML(address)}</div>
-          <div class="price">${price ? money(price) : "Price unavailable"}</div>
-          <div class="meta">
-            <span>${getBeds(p)} beds</span>
-            <span>${getBaths(p)} baths</span>
-            <span>${getArea(p) ? getArea(p).toLocaleString() + " sq ft" : "Area unavailable"}</span>
-          </div>
-          <div class="meta">
-            <span>${escapeHTML(getType(p))}</span>
-            <span>${p.yearBuilt ? "Built " + p.yearBuilt : ""}</span>
-          </div>
-          <div class="property-actions">
-            <button class="secondary" onclick="showDetails(${index})">Details</button>
-            <button class="primary" onclick="openAnalyzer(${index})">Analyze deal</button>
-          </div>
-          <button class="secondary" style="width:100%;margin-top:8px" onclick="toggleSave('${encodeURIComponent(id)}')">
-            ${saved.includes(id) ? "★ Saved" : "☆ Save property"}
-          </button>
-        </div>
-      </article>`;
-  }).join("");
+  grid.innerHTML=items.map((p,index)=>propertyCard(p,index)).join("");
 }
 
-function showDetails(index) {
-  const p = properties[index];
-  if (!p) return;
-  const agent = p.listingAgent?.name || "Not provided";
-  alert(
-    "PROPERTY DETAILS\n\n" +
-    getAddress(p) + "\n\n" +
-    "Price: " + money(getPrice(p)) + "\n" +
-    "Bedrooms: " + getBeds(p) + "\n" +
-    "Bathrooms: " + getBaths(p) + "\n" +
-    "Square footage: " + (getArea(p) || "Not provided") + "\n" +
-    "Year built: " + (p.yearBuilt || "Not provided") + "\n" +
-    "Listing agent: " + agent
-  );
+function renderSaved(){
+  const grid=document.getElementById("savedGrid");
+  const savedProperties=saved.map(id=>properties.find((p,index)=>getId(p,index)===id)).filter(Boolean);
+
+  if(!savedProperties.length){
+    grid.innerHTML='<div class="empty">You haven’t saved any properties from your current search.</div>';
+    return;
+  }
+  grid.innerHTML=savedProperties.map((p,index)=>propertyCard(p,index)).join("");
 }
 
-function toggleSave(encodedId) {
-  const id = decodeURIComponent(encodedId);
-  if (saved.includes(id)) saved = saved.filter(item => item !== id);
+function toggleSave(encodedId){
+  const id=decodeURIComponent(encodedId);
+  if(saved.includes(id)) saved=saved.filter(item=>item!==id);
   else saved.push(id);
   updateSavedCount();
   filterListings();
 }
 
-function openAnalyzer(index) {
-  activeProperty = properties[index];
-  if (!activeProperty) return;
+function showDetails(index){
+  const p=visibleProperties[index];
+  if(!p)return;
+  activeProperty=p;
 
-  document.getElementById("analysisAddress").textContent = getAddress(activeProperty);
-  document.getElementById("purchaseInput").value = getPrice(activeProperty) || "";
-  document.getElementById("arvInput").value = "";
-  document.getElementById("repairInput").value = 25000;
-  document.getElementById("costInput").value = 10000;
-  document.getElementById("analysisResults").style.display = "none";
-  document.getElementById("analysisModal").style.display = "flex";
+  const photos=getPhotos(p);
+  const phone=getAgentPhone(p);
+  const phoneDigits=String(phone).replace(/[^\d+]/g,"");
+  const agent=getAgentName(p);
+  const address=getAddress(p);
+
+  document.getElementById("detailsContent").innerHTML=`
+    <div class="gallery-main" id="galleryMain">
+      ${photos.length
+        ? `<img src="${escapeHTML(photos[0])}" alt="Property photo">`
+        : `<div class="photo-placeholder"><strong>⌂</strong>No listing photos supplied<br><small>This property record does not include an image.</small></div>`}
+    </div>
+    ${photos.length>1?`
+      <div class="gallery-thumbs">
+        ${photos.map((url,i)=>`
+          <img src="${escapeHTML(url)}" class="${i===0?"active":""}" alt="Property photo ${i+1}" onclick="changeGalleryPhoto(this,'${encodeURIComponent(url)}')">
+        `).join("")}
+      </div>`:""}
+    <div class="detail-price">${getPrice(p)?money(getPrice(p)):"Price unavailable"}</div>
+    <div class="detail-address">${escapeHTML(address)}</div>
+    <div class="detail-features">
+      <div class="detail-feature"><strong>${getBeds(p)||"—"}</strong><small>Bedrooms</small></div>
+      <div class="detail-feature"><strong>${getBaths(p)||"—"}</strong><small>Bathrooms</small></div>
+      <div class="detail-feature"><strong>${getArea(p)?getArea(p).toLocaleString():"—"}</strong><small>Sq ft</small></div>
+      <div class="detail-feature"><strong>${p.yearBuilt||"—"}</strong><small>Year built</small></div>
+    </div>
+    <div class="detail-section">
+      <h3>Property information</h3>
+      <div class="detail-line">Property type: ${escapeHTML(getType(p))}</div>
+      <div class="detail-line">City: ${escapeHTML(p.city||"Not provided")}</div>
+      <div class="detail-line">State: ${escapeHTML(p.state||"Not provided")}</div>
+      <div class="detail-line">ZIP code: ${escapeHTML(p.zipCode||"Not provided")}</div>
+      <div class="detail-line">Listing status: ${escapeHTML(p.status||"Not provided")}</div>
+      <div class="detail-line">Listing date: ${escapeHTML(p.listedDate||"Not provided")}</div>
+    </div>
+    <div class="detail-section">
+      <h3>Listing contact</h3>
+      <div class="detail-line">Agent: ${escapeHTML(agent)}</div>
+      <div class="detail-line">Office: ${escapeHTML(getAgentOffice(p))}</div>
+      <div class="contact-actions">
+        ${phoneDigits
+          ? `<a href="tel:${escapeHTML(phoneDigits)}">☎ Call ${escapeHTML(phone)}</a>`
+          : `<span class="detail-line">Phone number not supplied by the listing provider.</span>`}
+      </div>
+    </div>
+    <div class="detail-section">
+      <button class="primary" style="width:100%" onclick="closeModal('detailsModal');openAnalyzerForProperty()">Analyze this property</button>
+    </div>
+    <p class="notice">Listing information is supplied by RentCast and should be independently verified. Not every listing includes photos or agent contact details.</p>
+  `;
+
+  document.getElementById("detailsModal").style.display="flex";
 }
 
-function closeModal() {
-  document.getElementById("analysisModal").style.display = "none";
+function changeGalleryPhoto(element,encodedUrl){
+  const url=decodeURIComponent(encodedUrl);
+  document.getElementById("galleryMain").innerHTML=
+    `<img src="${escapeHTML(url)}" alt="Property photo">`;
+  document.querySelectorAll(".gallery-thumbs img").forEach(img=>img.classList.remove("active"));
+  element.classList.add("active");
 }
 
-function calculateDeal() {
-  const purchase = Number(document.getElementById("purchaseInput").value);
-  const arv = Number(document.getElementById("arvInput").value);
-  const repairs = Number(document.getElementById("repairInput").value);
-  const costs = Number(document.getElementById("costInput").value);
+function openAnalyzerForProperty(){
+  if(!activeProperty)return;
+  openAnalyzerWithProperty(activeProperty);
+}
+function openAnalyzer(index){
+  const p=visibleProperties[index];
+  if(!p)return;
+  openAnalyzerWithProperty(p);
+}
+function openAnalyzerWithProperty(p){
+  activeProperty=p;
+  document.getElementById("analysisAddress").textContent=getAddress(p);
+  document.getElementById("purchaseInput").value=getPrice(p)||"";
+  document.getElementById("arvInput").value="";
+  document.getElementById("repairInput").value=25000;
+  document.getElementById("costInput").value=10000;
+  document.getElementById("analysisResults").style.display="none";
+  document.getElementById("analysisModal").style.display="flex";
+}
 
-  if (!purchase || !arv || arv <= 0) {
-    alert("Enter a valid purchase price and estimated ARV.");
+function calculateDeal(){
+  const purchase=Number(document.getElementById("purchaseInput").value);
+  const arv=Number(document.getElementById("arvInput").value);
+  const repairs=Number(document.getElementById("repairInput").value);
+  const costs=Number(document.getElementById("costInput").value);
+
+  if(purchase<=0||arv<=0||repairs<0||costs<0){
+    alert("Enter valid purchase price, ARV, repair costs, and closing costs.");
     return;
   }
-
-  const profit = arv - purchase - repairs - costs;
-  document.getElementById("arvResult").textContent = money(arv);
-  document.getElementById("profitResult").textContent = money(profit);
-  document.getElementById("profitResult").style.color = profit >= 0 ? "var(--green)" : "var(--red)";
-  document.getElementById("analysisResults").style.display = "block";
+  const profit=arv-purchase-repairs-costs;
+  document.getElementById("arvResult").textContent=money(arv);
+  document.getElementById("profitResult").textContent=money(profit);
+  document.getElementById("profitResult").style.color=profit>=0?"var(--green)":"var(--red)";
+  document.getElementById("analysisResults").style.display="block";
 }
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-  })[char]);
+function closeModal(id){
+  document.getElementById(id).style.display="none";
 }
+function backdropClose(event,id){
+  if(event.target.id===id)closeModal(id);
+}
+
+document.addEventListener("keydown",event=>{
+  if(event.key==="Escape"){
+    closeModal("detailsModal");
+    closeModal("analysisModal");
+  }
+});
 
 updateSavedCount();
 </script>
