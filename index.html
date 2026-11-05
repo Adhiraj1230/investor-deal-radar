@@ -286,11 +286,26 @@ function renderListings(items, target="listings"){
 function getSearchParts(value){
   const q=value.trim();
   if(/^\d{5}$/.test(q)) return {zipCode:q};
+
   const comma=q.match(/^(.+?),\s*([A-Za-z]{2})$/);
-  if(comma) return {city:comma[1].trim(),state:comma[2].toUpperCase()};
+  if(comma) {
+    return {
+      city: comma[1].trim().toLowerCase().replace(/\b[a-z]/g,c=>c.toUpperCase()),
+      state: comma[2].toUpperCase()
+    };
+  }
+
   const stateAtEnd=q.match(/^(.+?)\s+([A-Za-z]{2})$/);
-  if(stateAtEnd) return {city:stateAtEnd[1].trim(),state:stateAtEnd[2].toUpperCase()};
-  return {city:q};
+  if(stateAtEnd) {
+    return {
+      city: stateAtEnd[1].trim().toLowerCase().replace(/\b[a-z]/g,c=>c.toUpperCase()),
+      state: stateAtEnd[2].toUpperCase()
+    };
+  }
+
+  return {
+    city:q.toLowerCase().replace(/\b[a-z]/g,c=>c.toUpperCase())
+  };
 }
 
 async function applyFilters(){
