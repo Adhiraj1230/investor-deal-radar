@@ -923,7 +923,71 @@ function applyFilters(){
   document.getElementById("resultsLabel").textContent=
     `Showing ${list.length} RentCast listings for ${formatSearchLabel(lastSearch)}`;
 }
+async function automaticallyAnalyzeListings(listings) {
+  const queue = [...listings];
+  let completed = 0;
 
+  async function worker() {
+    while (queue.length) {
+      const property = queue.shift();
+      if (!property) return;
+
+      const key = getSavedPropertyKey(property);
+
+      // Don't analyze the same property twice.
+      if (propertyMetrics[key]) continue;
+
+      const address = getAddress(property);
+      const purchasePrice = getPrice(property);
+      const squareFootage = getArea(property);
+
+      // These details are needed for the investment estimates.
+      if (!address || !purchasePrice || !squareFootage) continue;
+
+      try {
+        const response = await fetch("/api/estimate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            address,
+            propertyType: property.propertyType,
+            bedrooms: getBeds(property),
+            bathrooms: getBaths(property),
+            squareFootage,
+            purchasePrice
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Analysis failed");
+        }
+
+        if (data.metrics) {
+          propertyMetrics[key] = data.metrics;
+          completed++;
+
+          // Update the cards as estimates arrive.
+          renderProperties(visibleProperties);
+        }
+
+      } catch (error) {
+        console.error("Property analysis failed:", address, error);
+      }
+    }
+  }
+
+  // Two properties analyzed at a time to limit API traffic.
+  await Promise.all([
+    worker(),
+    worker()
+  ]);
+
+  console.log(`Automatic analysis completed: ${completed} properties.`);
+}
 async function searchListings(value){
   const search=value.trim();
 
@@ -969,7 +1033,7 @@ async function searchListings(value){
 
     applyFilters();
     renderSavedProperties();
-
+automaticallyAnalyzeListings(properties);
   }catch(error){
     document.getElementById("propertyGrid").innerHTML=
       `<div class="empty">${escapeHTML(error.message)}</div>`;
