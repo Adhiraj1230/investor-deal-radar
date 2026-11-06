@@ -468,6 +468,7 @@ document.getElementById("authForm").addEventListener("submit",async event=>{
 });
 
 let properties=[];
+let propertyMetrics = {};
 let visibleProperties=[];
 let savedProperties=loadSavedProperties();
 let lastSearch="";
@@ -778,7 +779,9 @@ function investmentMetrics(metrics = null) {
       </div>
       <div class="detail-item">
         <small>Estimated ROI</small>
-        <strong>${range(metrics.estimatedROI)}</strong>
+        <strong>${metrics.estimatedROI
+  ? `${Number(metrics.estimatedROI.low).toFixed(1)}% – ${Number(metrics.estimatedROI.high).toFixed(1)}%`
+  : "Unavailable"}</strong>
       </div>
     </div>`;
 }
@@ -820,7 +823,7 @@ function propertyCard(p,isSaved=false){
           <span>${area===null?"Area unavailable":area.toLocaleString()+" sq ft"}</span>
         </div>
 
-        ${investmentMetrics()}
+        ${investmentMetrics(propertyMetrics[getSavedPropertyKey(p)] || null)}
 
         <div class="property-actions">
           <button class="secondary"
@@ -1479,6 +1482,10 @@ async function autoEstimateProperty() {
         data.error || "The automatic estimate could not be completed."
       );
     }
+    if (data.metrics && activeAnalysisProperty) {
+  propertyMetrics[getSavedPropertyKey(activeAnalysisProperty)] = data.metrics;
+ renderProperties(visibleProperties);
+}
 
     if (data.value?.price) {
       document.getElementById("arvInput").value =
