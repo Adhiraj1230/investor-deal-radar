@@ -11,10 +11,8 @@ const ALLOWED_PROPERTY_TYPES = new Set([
 const ASSUMPTIONS = {
   renovationLowPerSqFt: 25,
   renovationHighPerSqFt: 50,
-
   purchaseClosingRate: 0.03,
   sellingCostRate: 0.06,
-
   holdingCostsPerMonth: 500,
   holdingPeriodMonths: 6,
   contingencyRate: 0.10,
@@ -37,7 +35,6 @@ function validNumber(value, max) {
   }
 
   const number = Number(value);
-
   return Number.isFinite(number) && number > 0 && number <= max;
 }
 
@@ -186,7 +183,7 @@ function calculateMetrics(value, purchasePrice, squareFootage) {
     (profitHigh / totalCostLow) * 100;
 
   return {
-    estimatedARV: arv,
+    estimatedARV: Math.round(arv),
 
     renovationEstimate: {
       low: Math.round(renovationLow),
@@ -204,89 +201,12 @@ function calculateMetrics(value, purchasePrice, squareFootage) {
     },
 
     assumptions: {
-      renovationPerSqFt: "$25–$50",
+      renovationPerSqFt: "$25-$50",
       contingencyRate: "10%",
       purchaseClosingRate: "3%",
       sellingCostRate: "6%",
       holdingCosts,
       holdingPeriodMonths: ASSUMPTIONS.holdingPeriodMonths
-    }
-  };
-}
-
-  const purchase = Number(purchasePrice);
-  const area = Number(squareFootage);
-
-  const renovationLow =
-    area * ASSUMPTIONS.renovationLowPerSqFt;
-
-  const renovationHigh =
-    area * ASSUMPTIONS.renovationHighPerSqFt;
-
-  const closingCosts =
-    purchase * ASSUMPTIONS.purchaseClosingRate;
-
-  const sellingCosts =
-    arv * ASSUMPTIONS.sellingCostRate;
-
-  const profitAtHighRenovation =
-    arv -
-    purchase -
-    closingCosts -
-    renovationHigh -
-    ASSUMPTIONS.holdingCosts -
-    sellingCosts;
-
-  const profitAtLowRenovation =
-    arv -
-    purchase -
-    closingCosts -
-    renovationLow -
-    ASSUMPTIONS.holdingCosts -
-    sellingCosts;
-
-  const totalCostAtHighRenovation =
-    purchase +
-    closingCosts +
-    renovationHigh +
-    ASSUMPTIONS.holdingCosts;
-
-  const totalCostAtLowRenovation =
-    purchase +
-    closingCosts +
-    renovationLow +
-    ASSUMPTIONS.holdingCosts;
-
-  const roiLow =
-    totalCostAtHighRenovation > 0
-      ? profitAtHighRenovation / totalCostAtHighRenovation * 100
-      : null;
-
-  const roiHigh =
-    totalCostAtLowRenovation > 0
-      ? profitAtLowRenovation / totalCostAtLowRenovation * 100
-      : null;
-
-  return {
-    estimatedARV: Math.round(arv),
-    renovationEstimate: {
-      low: Math.round(renovationLow),
-      high: Math.round(renovationHigh)
-    },
-    potentialNetProfit: {
-      low: Math.round(profitAtHighRenovation),
-      high: Math.round(profitAtLowRenovation)
-    },
-    estimatedROI: {
-      low: Number(roiLow.toFixed(1)),
-      high: Number(roiHigh.toFixed(1))
-    },
-    assumptions: {
-      renovationPerSqFt: "$25–$50",
-      purchaseClosingRate: "3%",
-      sellingCostRate: "6%",
-      holdingCosts: ASSUMPTIONS.holdingCosts,
-      holdingPeriodMonths: 6
     }
   };
 }
@@ -338,9 +258,11 @@ module.exports = async function handler(req, res) {
         ? rentResult.value
         : null;
 
-    if (!value && !rent) {
-      console.error("RentCast value error:", valueResult.reason);
-      console.error("RentCast rent error:", rentResult.reason);
+    if (!value) {
+      console.error(
+        "RentCast valuation error:",
+        valueResult.reason
+      );
 
       return sendJson(res, 502, {
         error: "RentCast could not estimate this property. Check the address and try again."
@@ -361,7 +283,8 @@ module.exports = async function handler(req, res) {
       metrics,
       warnings: [
         "Estimated ARV uses an automated market valuation and is not a verified after-repair value.",
-        "Renovation estimates use a standard cost-per-square-foot assumption.",
+        "Renovation estimates use a standard cost-per-square-foot assumption and include a 10% contingency.",
+        "Holding costs assume six months at $500 per month.",
         "Actual property condition, financing, taxes, and transaction costs may change the results."
       ]
     });
