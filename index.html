@@ -725,24 +725,60 @@ function getPhoto(p){
 }
 
 /* Customer-facing investment indicators */
-function investmentMetrics(){
+function investmentMetrics(metrics = null) {
+  if (!metrics) {
+    return `
+      <div class="detail-grid">
+        <div class="detail-item">
+          <small>Estimated ARV</small>
+          <strong>Pending analysis</strong>
+        </div>
+        <div class="detail-item">
+          <small>Renovation estimate</small>
+          <strong>Pending analysis</strong>
+        </div>
+        <div class="detail-item">
+          <small>Potential net profit</small>
+          <strong style="color:var(--green)">Pending analysis</strong>
+        </div>
+        <div class="detail-item">
+          <small>Estimated ROI</small>
+          <strong>Pending analysis</strong>
+        </div>
+      </div>`;
+  }
+
+  const range = (item) =>
+    item && Number.isFinite(Number(item.low)) &&
+    Number.isFinite(Number(item.high))
+      ? `${money(item.low)} – ${money(item.high)}`
+      : "Unavailable";
+
+  const profit = metrics.potentialNetProfit;
+  const profitColor =
+    profit && Number(profit.low) > 0
+      ? "var(--green)"
+      : profit && Number(profit.high) < 0
+        ? "var(--danger)"
+        : "var(--text)";
+
   return `
     <div class="detail-grid">
       <div class="detail-item">
         <small>Estimated ARV</small>
-        <strong>Pending analysis</strong>
+        <strong>${metrics.estimatedARV ? money(metrics.estimatedARV) : "Unavailable"}</strong>
       </div>
       <div class="detail-item">
         <small>Renovation estimate</small>
-        <strong>Pending analysis</strong>
+        <strong>${range(metrics.renovationEstimate)}</strong>
       </div>
       <div class="detail-item">
         <small>Potential net profit</small>
-        <strong style="color:var(--green)">Pending analysis</strong>
+        <strong style="color:${profitColor}">${range(profit)}</strong>
       </div>
       <div class="detail-item">
         <small>Estimated ROI</small>
-        <strong>Pending analysis</strong>
+        <strong>${range(metrics.estimatedROI)}</strong>
       </div>
     </div>`;
 }
