@@ -1,4 +1,13 @@
 
+const RESIDENTIAL_TYPES = [
+  "Single Family",
+  "Condo",
+  "Townhouse",
+  "Multi-Family",
+  "Apartment",
+  "Manufactured"
+];
+
 function sendJson(res, status, data) {
   res.setHeader("Cache-Control", "no-store");
   return res.status(status).json(data);
@@ -82,6 +91,8 @@ module.exports = async function handler(req, res) {
 
   params.set("status", "Active");
   params.set("limit", String(safeLimit));
+  params.set("daysOld", "90");
+  params.set("propertyType", RESIDENTIAL_TYPES.join("|"));
 
   if (cleanCity) params.set("city", cleanCity);
   if (cleanState) params.set("state", cleanState);
@@ -107,8 +118,6 @@ module.exports = async function handler(req, res) {
     try {
       data = text ? JSON.parse(text) : [];
     } catch {
-      console.error("Invalid RentCast listings response.");
-
       return sendJson(res, 502, {
         error: "The property data provider returned an invalid response."
       });
@@ -119,9 +128,9 @@ module.exports = async function handler(req, res) {
 
       return sendJson(res, response.status, {
         error: response.status === 401 || response.status === 403
-          ? "RentCast rejected the API key. Check your Vercel environment variable."
+          ? "RentCast rejected the API key."
           : response.status === 429
-          ? "RentCast request limit reached. Please try again later."
+          ? "RentCast request limit reached. Try again later."
           : "Unable to retrieve property listings."
       });
     }
