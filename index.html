@@ -831,10 +831,7 @@ function propertyCard(p,isSaved=false){
             Details
           </button>
 
-          <button class="primary"
-            onclick="openAnalyzerById('${encoded}')">
-            View insights
-          </button>
+        
 
           <button class="secondary"
             onclick="toggleSavedById('${encoded}')">
@@ -1345,9 +1342,6 @@ function openDetailsById(encoded) {
       availability, price, property condition, and all listing information.
     </p>
 
-    <button class="primary" onclick="openAnalyzerById('${encoded}')">
-      Analyze this property
-    </button>
   `;
 
   openModal("detailsModal");
