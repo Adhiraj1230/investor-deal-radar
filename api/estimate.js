@@ -11,9 +11,19 @@ const ALLOWED_PROPERTY_TYPES = new Set([
 const ASSUMPTIONS = {
   renovationLowPerSqFt: 25,
   renovationHighPerSqFt: 50,
+
   purchaseClosingRate: 0.03,
   sellingCostRate: 0.06,
-  holdingCosts: 3000
+
+  holdingCostsPerMonth: 500,
+  holdingPeriodMonths: 6,
+  contingencyRate: 0.10,
+
+  financing: {
+    downPaymentRate: 0.20,
+    annualInterestRate: 0.105,
+    loanPointsRate: 0.02
+  }
 };
 
 function sendJson(res, status, data) {
@@ -101,15 +111,108 @@ async function fetchRentCast(endpoint, params, apiKey) {
 
 function calculateMetrics(value, purchasePrice, squareFootage) {
   const arv = Number(value?.price);
+  const purchase = Number(purchasePrice);
+  const sqft = Number(squareFootage);
 
   if (
     !Number.isFinite(arv) ||
+    !Number.isFinite(purchase) ||
+    !Number.isFinite(sqft) ||
     arv <= 0 ||
-    !validNumber(purchasePrice, 100000000) ||
-    !validNumber(squareFootage, 100000)
+    purchase <= 0 ||
+    sqft <= 0
   ) {
     return null;
   }
+
+  const renovationLow =
+    sqft * ASSUMPTIONS.renovationLowPerSqFt;
+
+  const renovationHigh =
+    sqft * ASSUMPTIONS.renovationHighPerSqFt;
+
+  const closingCosts =
+    purchase * ASSUMPTIONS.purchaseClosingRate;
+
+  const sellingCosts =
+    arv * ASSUMPTIONS.sellingCostRate;
+
+  const holdingCosts =
+    ASSUMPTIONS.holdingCostsPerMonth *
+    ASSUMPTIONS.holdingPeriodMonths;
+
+  const contingencyLow =
+    renovationLow * ASSUMPTIONS.contingencyRate;
+
+  const contingencyHigh =
+    renovationHigh * ASSUMPTIONS.contingencyRate;
+
+  const totalCostLow =
+    purchase +
+    closingCosts +
+    renovationLow +
+    contingencyLow +
+    holdingCosts;
+
+  const totalCostHigh =
+    purchase +
+    closingCosts +
+    renovationHigh +
+    contingencyHigh +
+    holdingCosts;
+
+  const profitLow =
+    arv -
+    purchase -
+    closingCosts -
+    renovationHigh -
+    contingencyHigh -
+    holdingCosts -
+    sellingCosts;
+
+  const profitHigh =
+    arv -
+    purchase -
+    closingCosts -
+    renovationLow -
+    contingencyLow -
+    holdingCosts -
+    sellingCosts;
+
+  const roiLow =
+    (profitLow / totalCostHigh) * 100;
+
+  const roiHigh =
+    (profitHigh / totalCostLow) * 100;
+
+  return {
+    estimatedARV: arv,
+
+    renovationEstimate: {
+      low: Math.round(renovationLow),
+      high: Math.round(renovationHigh)
+    },
+
+    potentialNetProfit: {
+      low: Math.round(profitLow),
+      high: Math.round(profitHigh)
+    },
+
+    estimatedROI: {
+      low: Number(roiLow.toFixed(1)),
+      high: Number(roiHigh.toFixed(1))
+    },
+
+    assumptions: {
+      renovationPerSqFt: "$25–$50",
+      contingencyRate: "10%",
+      purchaseClosingRate: "3%",
+      sellingCostRate: "6%",
+      holdingCosts,
+      holdingPeriodMonths: ASSUMPTIONS.holdingPeriodMonths
+    }
+  };
+}
 
   const purchase = Number(purchasePrice);
   const area = Number(squareFootage);
