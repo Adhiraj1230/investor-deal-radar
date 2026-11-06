@@ -5,9 +5,16 @@ const ALLOWED_PROPERTY_TYPES = new Set([
   "Townhouse",
   "Multi-Family",
   "Manufactured",
-  "Apartment",
-  "Land"
+  "Apartment"
 ]);
+
+const ASSUMPTIONS = {
+  renovationLowPerSqFt: 25,
+  renovationHighPerSqFt: 50,
+  purchaseClosingRate: 0.03,
+  sellingCostRate: 0.06,
+  holdingCosts: 3000
+};
 
 function sendJson(res, status, data) {
   res.setHeader("Cache-Control", "no-store");
@@ -15,19 +22,13 @@ function sendJson(res, status, data) {
 }
 
 function validNumber(value, max) {
-  if (
-    value === null ||
-    value === undefined ||
-    value === ""
-  ) {
+  if (value === null || value === undefined || value === "") {
     return false;
   }
 
   const number = Number(value);
 
-  return Number.isFinite(number) &&
-    number > 0 &&
-    number <= max;
+  return Number.isFinite(number) && number > 0 && number <= max;
 }
 
 function buildParams(body) {
@@ -57,17 +58,17 @@ function buildParams(body) {
 }
 
 async function fetchRentCast(endpoint, params, apiKey) {
-  const url =
-    `https://api.rentcast.io/v1/${endpoint}?${params.toString()}`;
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "X-Api-Key": apiKey
-    },
-    signal: AbortSignal.timeout(15000)
-  });
+  const response = await fetch(
+    `https://api.rentcast.io/v1/${endpoint}?${params.toString()}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "X-Api-Key": apiKey
+      },
+      signal: AbortSignal.timeout(15000)
+    }
+  );
 
   const text = await response.text();
 
@@ -81,11 +82,11 @@ async function fetchRentCast(endpoint, params, apiKey) {
 
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
-      throw new Error("RentCast rejected the API key. Check your Vercel environment variable.");
+      throw new Error("RentCast rejected the API key.");
     }
 
     if (response.status === 429) {
-      throw new Error("RentCast request limit reached. Please try again later.");
+      throw new Error("RentCast request limit reached.");
     }
 
     throw new Error(
@@ -96,6 +97,95 @@ async function fetchRentCast(endpoint, params, apiKey) {
   }
 
   return data;
+}
+
+function calculateMetrics(value, purchasePrice, squareFootage) {
+  const arv = Number(value?.price);
+
+  if (
+    !Number.isFinite(arv) ||
+    arv <= 0 ||
+    !validNumber(purchasePrice, 100000000) ||
+    !validNumber(squareFootage, 100000)
+  ) {
+    return null;
+  }
+
+  const purchase = Number(purchasePrice);
+  const area = Number(squareFootage);
+
+  const renovationLow =
+    area * ASSUMPTIONS.renovationLowPerSqFt;
+
+  const renovationHigh =
+    area * ASSUMPTIONS.renovationHighPerSqFt;
+
+  const closingCosts =
+    purchase * ASSUMPTIONS.purchaseClosingRate;
+
+  const sellingCosts =
+    arv * ASSUMPTIONS.sellingCostRate;
+
+  const profitAtHighRenovation =
+    arv -
+    purchase -
+    closingCosts -
+    renovationHigh -
+    ASSUMPTIONS.holdingCosts -
+    sellingCosts;
+
+  const profitAtLowRenovation =
+    arv -
+    purchase -
+    closingCosts -
+    renovationLow -
+    ASSUMPTIONS.holdingCosts -
+    sellingCosts;
+
+  const totalCostAtHighRenovation =
+    purchase +
+    closingCosts +
+    renovationHigh +
+    ASSUMPTIONS.holdingCosts;
+
+  const totalCostAtLowRenovation =
+    purchase +
+    closingCosts +
+    renovationLow +
+    ASSUMPTIONS.holdingCosts;
+
+  const roiLow =
+    totalCostAtHighRenovation > 0
+      ? profitAtHighRenovation / totalCostAtHighRenovation * 100
+      : null;
+
+  const roiHigh =
+    totalCostAtLowRenovation > 0
+      ? profitAtLowRenovation / totalCostAtLowRenovation * 100
+      : null;
+
+  return {
+    estimatedARV: Math.round(arv),
+    renovationEstimate: {
+      low: Math.round(renovationLow),
+      high: Math.round(renovationHigh)
+    },
+    potentialNetProfit: {
+      low: Math.round(profitAtHighRenovation),
+      high: Math.round(profitAtLowRenovation)
+    },
+    estimatedROI: {
+      low: Number(roiLow.toFixed(1)),
+      high: Number(roiHigh.toFixed(1))
+    },
+    assumptions: {
+      renovationPerSqFt: "$25–$50",
+      purchaseClosingRate: "3%",
+      sellingCostRate: "6%",
+      holdingCosts: ASSUMPTIONS.holdingCosts,
+      holdingPeriodMonths: 6
+    }
+  };
 }
 
 module.exports = async function handler(req, res) {
@@ -154,25 +244,36 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    const metrics = calculateMetrics(
+      value,
+      body.purchasePrice,
+      body.squareFootage
+    );
+
     return sendJson(res, 200, {
       provider: "RentCast",
       estimateType: "Automated market valuation",
       value,
       rent,
+      metrics,
       warnings: [
-        "The property value is a market estimate, not a guaranteed after-repair value.",
-        "Rental estimates are not guaranteed achievable rents.",
-        "Renovation costs require a separate property-condition assessment."
+        "Estimated ARV uses an automated market valuation and is not a verified after-repair value.",
+        "Renovation estimates use a standard cost-per-square-foot assumption.",
+        "Actual property condition, financing, taxes, and transaction costs may change the results."
       ]
     });
 
   } catch (error) {
     console.error("Estimate endpoint error:", error);
 
-    return sendJson(res, 500, {
-      error: error.name === "TimeoutError"
-        ? "RentCast took too long to respond. Please try again."
-        : "An unexpected error occurred while estimating this property."
-    });
+    return sendJson(
+      res,
+      error.name === "TimeoutError" ? 504 : 500,
+      {
+        error: error.name === "TimeoutError"
+          ? "RentCast took too long to respond. Please try again."
+          : "An unexpected error occurred while estimating this property."
+      }
+    );
   }
 };
