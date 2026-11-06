@@ -8,6 +8,62 @@ const RESIDENTIAL_TYPES = [
   "Manufactured"
 ];
 
+const STATES = {
+  ALABAMA: "AL",
+  ALASKA: "AK",
+  ARIZONA: "AZ",
+  ARKANSAS: "AR",
+  CALIFORNIA: "CA",
+  COLORADO: "CO",
+  CONNECTICUT: "CT",
+  DELAWARE: "DE",
+  FLORIDA: "FL",
+  GEORGIA: "GA",
+  HAWAII: "HI",
+  IDAHO: "ID",
+  ILLINOIS: "IL",
+  INDIANA: "IN",
+  IOWA: "IA",
+  KANSAS: "KS",
+  KENTUCKY: "KY",
+  LOUISIANA: "LA",
+  MAINE: "ME",
+  MARYLAND: "MD",
+  MASSACHUSETTS: "MA",
+  MICHIGAN: "MI",
+  MINNESOTA: "MN",
+  MISSISSIPPI: "MS",
+  MISSOURI: "MO",
+  MONTANA: "MT",
+  NEBRASKA: "NE",
+  NEVADA: "NV",
+  "NEW HAMPSHIRE": "NH",
+  "NEW JERSEY": "NJ",
+  "NEW MEXICO": "NM",
+  "NEW YORK": "NY",
+  "NORTH CAROLINA": "NC",
+  "NORTH DAKOTA": "ND",
+  OHIO: "OH",
+  OKLAHOMA: "OK",
+  OREGON: "OR",
+  PENNSYLVANIA: "PA",
+  "RHODE ISLAND": "RI",
+  "SOUTH CAROLINA": "SC",
+  "SOUTH DAKOTA": "SD",
+  TENNESSEE: "TN",
+  TEXAS: "TX",
+  UTAH: "UT",
+  VERMONT: "VT",
+  VIRGINIA: "VA",
+  WASHINGTON: "WA",
+  "WEST VIRGINIA": "WV",
+  WISCONSIN: "WI",
+  WYOMING: "WY",
+  "DISTRICT OF COLUMBIA": "DC"
+};
+
+const VALID_STATE_CODES = new Set(Object.values(STATES));
+
 function sendJson(res, status, data) {
   res.setHeader("Cache-Control", "no-store");
   return res.status(status).json(data);
@@ -18,6 +74,15 @@ function normalizeCity(value) {
     .trim()
     .toLowerCase()
     .replace(/(^|[\s'-])\p{L}/gu, letter => letter.toUpperCase());
+}
+
+function normalizeState(value) {
+  const normalized = value.trim().toUpperCase();
+
+  if (STATES[normalized]) return STATES[normalized];
+  if (VALID_STATE_CODES.has(normalized)) return normalized;
+
+  return null;
 }
 
 module.exports = async function handler(req, res) {
@@ -43,30 +108,50 @@ module.exports = async function handler(req, res) {
     limit = "20"
   } = req.query || {};
 
-  const cleanCity =
-    typeof city === "string" ? normalizeCity(city) : "";
+  let cleanCity =
+    typeof city === "string" ? city.trim() : "";
 
-  const cleanState =
-    typeof state === "string" ? state.trim().toUpperCase() : "";
+  let cleanState =
+    typeof state === "string" ? state.trim() : "";
 
   const cleanZip =
     typeof zipCode === "string" ? zipCode.trim() : "";
 
-  if (!cleanCity && !cleanZip) {
+  // If the user typed a state name or abbreviation
+  // into the city search box, convert it to a state search.
+  if (cleanCity && !cleanState) {
+    const possibleState = normalizeState(cleanCity);
+
+    if (possibleState) {
+      cleanState = possibleState;
+      cleanCity = "";
+    }
+  }
+
+  // Also accept full state names in the state parameter.
+  if (cleanState) {
+    const normalizedState = normalizeState(cleanState);
+
+    if (!normalizedState) {
+      return sendJson(res, 400, {
+        error: "Enter a valid US state name or abbreviation."
+      });
+    }
+
+    cleanState = normalizedState;
+  }
+
+  cleanCity = cleanCity ? normalizeCity(cleanCity) : "";
+
+  if (!cleanCity && !cleanState && !cleanZip) {
     return sendJson(res, 400, {
-      error: "Enter a city or ZIP code."
+      error: "Enter a city, state, or ZIP code."
     });
   }
 
   if (cleanCity.length > 100) {
     return sendJson(res, 400, {
       error: "City name is too long."
-    });
-  }
-
-  if (cleanState && !/^[A-Z]{2}$/.test(cleanState)) {
-    return sendJson(res, 400, {
-      error: "Enter a valid two-letter state abbreviation."
     });
   }
 
