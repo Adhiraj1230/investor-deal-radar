@@ -5,11 +5,29 @@ const ALLOWED_PROPERTY_TYPES = new Set([
   "Townhouse",
   "Multi-Family",
   "Manufactured",
-  "Apartment"
+  "Apartment",
+  "Land"
 ]);
 
 function sendJson(res, status, data) {
+  res.setHeader("Cache-Control", "no-store");
   return res.status(status).json(data);
+}
+
+function validNumber(value, max) {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return false;
+  }
+
+  const number = Number(value);
+
+  return Number.isFinite(number) &&
+    number > 0 &&
+    number <= max;
 }
 
 function buildParams(body) {
@@ -23,21 +41,15 @@ function buildParams(body) {
     params.set("propertyType", body.propertyType);
   }
 
-  const numericFields = {
-    bedrooms: body.bedrooms,
-    bathrooms: body.bathrooms,
-    squareFootage: body.squareFootage
+  const fields = {
+    bedrooms: 30,
+    bathrooms: 30,
+    squareFootage: 100000
   };
 
-  for (const [key, value] of Object.entries(numericFields)) {
-    if (
-      value !== null &&
-      value !== undefined &&
-      value !== "" &&
-      Number.isFinite(Number(value)) &&
-      Number(value) > 0
-    ) {
-      params.set(key, String(Number(value)));
+  for (const [field, max] of Object.entries(fields)) {
+    if (validNumber(body[field], max)) {
+      params.set(field, String(Number(body[field])));
     }
   }
 
@@ -45,20 +57,22 @@ function buildParams(body) {
 }
 
 async function fetchRentCast(endpoint, params, apiKey) {
-  const response = await fetch(
-    `https://api.rentcast.io/v1/${endpoint}?${params.toString()}`,
-    {
-      method: "GET",
-      headers: {
-        "Accept": "application/json",
-        "X-Api-Key": apiKey
-      }
-    }
-  );
+  const url =
+    `https://api.rentcast.io/v1/${endpoint}?${params.toString()}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "X-Api-Key": apiKey
+    },
+    signal: AbortSignal.timeout(15000)
+  });
 
   const text = await response.text();
 
   let data;
+
   try {
     data = text ? JSON.parse(text) : {};
   } catch {
@@ -66,12 +80,19 @@ async function fetchRentCast(endpoint, params, apiKey) {
   }
 
   if (!response.ok) {
-    const message =
+    if (response.status === 401 || response.status === 403) {
+      throw new Error("RentCast rejected the API key. Check your Vercel environment variable.");
+    }
+
+    if (response.status === 429) {
+      throw new Error("RentCast request limit reached. Please try again later.");
+    }
+
+    throw new Error(
       data.message ||
       data.error ||
-      `RentCast request failed (${response.status}).`;
-
-    throw new Error(message);
+      `RentCast request failed (${response.status}).`
+    );
   }
 
   return data;
@@ -80,6 +101,7 @@ async function fetchRentCast(endpoint, params, apiKey) {
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
+
     return sendJson(res, 405, {
       error: "Method not allowed."
     });
@@ -89,7 +111,7 @@ module.exports = async function handler(req, res) {
 
   if (!apiKey) {
     return sendJson(res, 500, {
-      error: "The RentCast API key is not configured in Vercel."
+      error: "RentCast API key is missing from Vercel."
     });
   }
 
@@ -124,25 +146,23 @@ module.exports = async function handler(req, res) {
         : null;
 
     if (!value && !rent) {
-      const reason =
-        valueResult.reason?.message ||
-        rentResult.reason?.message ||
-        "RentCast could not estimate this property.";
+      console.error("RentCast value error:", valueResult.reason);
+      console.error("RentCast rent error:", rentResult.reason);
 
       return sendJson(res, 502, {
-        error: reason
+        error: "RentCast could not estimate this property. Check the address and try again."
       });
     }
 
     return sendJson(res, 200, {
       provider: "RentCast",
-      estimateType: "Automated valuation model",
+      estimateType: "Automated market valuation",
       value,
       rent,
       warnings: [
-        "Market value estimates are not guaranteed after-repair values.",
+        "The property value is a market estimate, not a guaranteed after-repair value.",
         "Rental estimates are not guaranteed achievable rents.",
-        "Renovation costs require separate property-condition assessment."
+        "Renovation costs require a separate property-condition assessment."
       ]
     });
 
@@ -150,7 +170,9 @@ module.exports = async function handler(req, res) {
     console.error("Estimate endpoint error:", error);
 
     return sendJson(res, 500, {
-      error: "An unexpected error occurred while estimating this property."
+      error: error.name === "TimeoutError"
+        ? "RentCast took too long to respond. Please try again."
+        : "An unexpected error occurred while estimating this property."
     });
   }
 };
