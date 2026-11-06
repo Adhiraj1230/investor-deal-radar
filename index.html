@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -123,13 +121,11 @@ main{padding:25px 4%}
   </nav>
 </header>
 
-
 <main>
 <p class="intro">
   Find residential properties and evaluate their potential as investment deals.
   Search markets, compare numbers, and make smarter decisions.
 </p>
-
 
 <section class="search-panel">
   <form id="searchForm">
@@ -150,25 +146,21 @@ main{padding:25px 4%}
   </div>
 </section>
 
-
 <section class="stats">
   <div class="stat"><strong id="totalCount">0</strong><small>Properties found</small></div>
   <div class="stat"><strong id="averagePrice">—</strong><small>Average asking price</small></div>
   <div class="stat"><strong id="marketLabel">—</strong><small>Current market</small></div>
 </section>
 
-
 <section id="properties">
   <div class="section-head"><div><h2>Available investment properties</h2><p id="resultsLabel">Search a market to discover properties.</p></div></div>
   <div class="grid" id="propertyGrid"><div class="empty">Enter a city, state, or ZIP code to find investment properties.</div></div>
 </section>
 
-
 <section class="saved-section" id="saved">
   <div class="section-head"><div><h2>Saved properties</h2><p>Your shortlist of potential investment deals.</p></div></div>
   <div class="grid" id="savedGrid"><div class="empty">You haven't saved any properties yet.</div></div>
 </section>
-
 
 <section id="how" class="notice">
   <strong>How it works:</strong> Search a market, review available residential listings,
@@ -177,9 +169,7 @@ main{padding:25px 4%}
 </section>
 </main>
 
-
 <footer>Investor Deal Radar · Property data provided by RentCast · Not financial or real estate investment advice.</footer>
-
 
 <div class="modal-backdrop" id="authModal" onclick="closeOnBackdrop(event,'authModal')">
   <div class="modal" style="max-width:460px">
@@ -198,7 +188,6 @@ main{padding:25px 4%}
   </div>
 </div>
 
-
 <div class="modal-backdrop" id="detailsModal" onclick="closeOnBackdrop(event,'detailsModal')">
   <div class="modal">
     <div class="modal-top"><h2>Property details</h2><button class="close" onclick="closeModal('detailsModal')">✕</button></div>
@@ -206,11 +195,14 @@ main{padding:25px 4%}
   </div>
 </div>
 
-
 <div class="modal-backdrop" id="analysisModal" onclick="closeOnBackdrop(event,'analysisModal')">
   <div class="modal">
     <div class="modal-top"><h2>Deal Analyzer</h2><button class="close" onclick="closeModal('analysisModal')">✕</button></div>
     <p id="analysisAddress" style="color:var(--muted)"></p>
+    <div class="disclaimer" style="margin:12px 0">Start with the property's address and listing data. Automatic estimates use RentCast valuation and rental comparables. Renovation costs remain assumptions until property condition is assessed.</div>
+    <button class="secondary" id="autoEstimateButton" type="button" style="width:100%;margin:8px 0 14px" onclick="autoEstimateProperty()">✨ Auto-estimate this property</button>
+    <p id="estimateStatus" role="status" style="font-size:12px;color:var(--muted)"></p>
+    <div id="estimateComps" class="notice" style="margin:8px 0"></div>
     <div class="filter">
       <label for="strategyInput">Investment strategy</label>
       <select id="strategyInput" onchange="toggleAnalysisMode()"><option value="flip">Fix &amp; Flip</option><option value="rental">Long-Term Rental</option></select>
@@ -225,53 +217,48 @@ main{padding:25px 4%}
       <div><label for="pointsInput">Loan points (%)</label><input id="pointsInput" type="number" min="0" max="20" step="0.25" value="1"></div>
     </div>
 
+    <div id="flipInputs">
+      <h3>Fix &amp; Flip assumptions</h3>
+      <div class="calc-grid">
+        <div><label for="arvInput">After-repair value (ARV) ($)</label><input id="arvInput" type="number" min="1" placeholder="Estimated resale price"></div>
+        <div><label for="materialsInput">Renovation materials ($)</label><input id="materialsInput" type="number" min="0" value="0"></div>
+        <div><label for="laborInput">Renovation labor ($)</label><input id="laborInput" type="number" min="0" value="0"></div>
+        <div><label for="permitsInput">Permits and inspections ($)</label><input id="permitsInput" type="number" min="0" value="0"></div>
+        <div><label for="contingencyInput">Repair contingency (%)</label><input id="contingencyInput" type="number" min="0" max="100" value="10"></div>
+        <div><label for="holdingMonthsInput">Project duration (months)</label><input id="holdingMonthsInput" type="number" min="1" max="120" value="6"></div>
+        <div><label for="holdingInput">Monthly holding expenses ($)</label><input id="holdingInput" type="number" min="0" value="500"></div>
+        <div><label for="sellingInput">Selling costs (% of resale)</label><input id="sellingInput" type="number" min="0" max="100" step="0.5" value="6"></div>
+        <div><label for="targetProfitInput">Desired profit ($)</label><input id="targetProfitInput" type="number" min="0" value="20000"></div>
+      </div>
+    </div>
 
-<div id="flipInputs">
-<h3>Fix & Flip assumptions</h3>
-<div class="calc-grid">
-<div><label for="arvInput">After-repair value (ARV) ($)</label><input id="arvInput" type="number" min="1" placeholder="Estimated resale price"></div>
-<div><label for="materialsInput">Renovation materials ($)</label><input id="materialsInput" type="number" min="0" value="0"></div>
-<div><label for="laborInput">Renovation labor ($)</label><input id="laborInput" type="number" min="0" value="0"></div>
-<div><label for="permitsInput">Permits and inspections ($)</label><input id="permitsInput" type="number" min="0" value="0"></div>
-<div><label for="contingencyInput">Repair contingency (%)</label><input id="contingencyInput" type="number" min="0" max="100" value="10"></div>
-<div><label for="holdingMonthsInput">Project duration (months)</label><input id="holdingMonthsInput" type="number" min="1" max="120" value="6"></div>
-<div><label for="holdingInput">Monthly holding expenses ($)</label><input id="holdingInput" type="number" min="0" value="500"></div>
-<div><label for="sellingInput">Selling costs (% of resale)</label><input id="sellingInput" type="number" min="0" max="100" step="0.5" value="6"></div>
-<div><label for="targetProfitInput">Desired profit ($)</label><input id="targetProfitInput" type="number" min="0" value="20000"></div>
-</div>
-</div>
+    <div id="rentalInputs" style="display:none">
+      <h3>Rental assumptions</h3>
+      <div class="calc-grid">
+        <div><label for="rentInput">Expected monthly rent ($)</label><input id="rentInput" type="number" min="0" placeholder="Expected monthly rent"></div>
+        <div><label for="vacancyInput">Vacancy allowance (%)</label><input id="vacancyInput" type="number" min="0" max="100" value="5"></div>
+        <div><label for="taxInput">Monthly property taxes ($)</label><input id="taxInput" type="number" min="0" value="0"></div>
+        <div><label for="insuranceInput">Monthly insurance ($)</label><input id="insuranceInput" type="number" min="0" value="0"></div>
+        <div><label for="maintenanceInput">Monthly maintenance reserve ($)</label><input id="maintenanceInput" type="number" min="0" value="0"></div>
+        <div><label for="managementInput">Property management (% of collected rent)</label><input id="managementInput" type="number" min="0" max="100" value="8"></div>
+        <div><label for="hoaInput">Monthly HOA ($)</label><input id="hoaInput" type="number" min="0" value="0"></div>
+        <div><label for="utilitiesInput">Monthly utilities ($)</label><input id="utilitiesInput" type="number" min="0" value="0"></div>
+        <div><label for="otherExpensesInput">Other monthly expenses ($)</label><input id="otherExpensesInput" type="number" min="0" value="0"></div>
+        <div><label for="rentalRepairsInput">Initial repairs / improvements ($)</label><input id="rentalRepairsInput" type="number" min="0" value="0"></div>
+      </div>
+    </div>
 
-<div id="rentalInputs" style="display:none">
-<h3>Rental assumptions</h3>
-<div class="calc-grid">
-<div><label for="rentInput">Expected monthly rent ($)</label><input id="rentInput" type="number" min="0" placeholder="Expected monthly rent"></div>
-<div><label for="vacancyInput">Vacancy allowance (%)</label><input id="vacancyInput" type="number" min="0" max="100" value="5"></div>
-<div><label for="taxInput">Monthly property taxes ($)</label><input id="taxInput" type="number" min="0" value="0"></div>
-<div><label for="insuranceInput">Monthly insurance ($)</label><input id="insuranceInput" type="number" min="0" value="0"></div>
-<div><label for="maintenanceInput">Monthly maintenance reserve ($)</label><input id="maintenanceInput" type="number" min="0" value="0"></div>
-<div><label for="managementInput">Property management (% of collected rent)</label><input id="managementInput" type="number" min="0" max="100" value="8"></div>
-<div><label for="hoaInput">Monthly HOA ($)</label><input id="hoaInput" type="number" min="0" value="0"></div>
-<div><label for="utilitiesInput">Monthly utilities ($)</label><input id="utilitiesInput" type="number" min="0" value="0"></div>
-<div><label for="otherExpensesInput">Other monthly expenses ($)</label><input id="otherExpensesInput" type="number" min="0" value="0"></div>
-<div><label for="rentalRepairsInput">Initial repairs / improvements ($)</label><input id="rentalRepairsInput" type="number" min="0" value="0"></div>
-</div>
-</div>
-
-<button class="primary" style="width:100%" onclick="calculateDeal()">Calculate investment</button>
-<div id="analysisResults" style="display:none;margin-top:22px">
-<h3 id="analysisResultTitle">Investment results</h3>
-<div id="analysisMetrics" class="result-grid"></div>
-<div class="breakdown"><h3>Complete investment breakdown</h3><div id="analysisBreakdown"></div></div>
-<p class="disclaimer">These figures are estimates based on the assumptions entered. Actual financing terms, taxes, insurance, repairs, rent, vacancy, market value, and transaction costs may differ. This calculator does not guarantee investment performance or profit.</p>
-</div>
-
+    <button class="primary" style="width:100%" onclick="calculateDeal()">Calculate investment</button>
+    <div id="analysisResults" style="display:none;margin-top:22px">
+      <h3 id="analysisResultTitle">Investment results</h3>
+      <div id="analysisMetrics" class="result-grid"></div>
+      <div class="breakdown"><h3>Complete investment breakdown</h3><div id="analysisBreakdown"></div></div>
+      <p class="disclaimer">These figures are estimates based on the assumptions entered. Actual financing terms, taxes, insurance, repairs, rent, vacancy, market value, and transaction costs may differ. This calculator does not guarantee investment performance or profit.</p>
+    </div>
   </div>
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
 <script>
 "use strict";
 
@@ -284,6 +271,7 @@ let currentAuthUser = null;
 let savedSyncUserId = null;
 let savedSyncInProgress = false;
 let savedSyncVersion = 0;
+let activeAnalysisProperty = null;
 
 function initSupabaseAuth(){
   if(!window.supabase || !window.supabase.createClient){
@@ -835,6 +823,7 @@ function renderSavedProperties(){
 function openAnalyzerById(encoded){
   const p=findCurrentProperty(encoded);
   if(!p)return;
+  activeAnalysisProperty=p;
   document.getElementById("analysisAddress").textContent=getAddress(p);
   const defaults={
     strategyInput:"flip",purchaseInput:getPrice(p)??"",closingInput:3000,downPaymentInput:20,
@@ -846,9 +835,59 @@ function openAnalyzerById(encoded){
   };
   Object.entries(defaults).forEach(([id,value])=>document.getElementById(id).value=value);
   document.getElementById("analysisResults").style.display="none";
+  document.getElementById("estimateStatus").textContent="";
+  document.getElementById("estimateComps").innerHTML="";
   toggleAnalysisMode();
   openModal("analysisModal");
 }
+
+async function autoEstimateProperty(){
+  if(!activeAnalysisProperty){
+    document.getElementById("estimateStatus").textContent="Select a property first.";
+    return;
+  }
+  const button=document.getElementById("autoEstimateButton");
+  const status=document.getElementById("estimateStatus");
+  button.disabled=true;
+  button.textContent="Researching property...";
+  status.textContent="Retrieving property valuation, comparable sales, and rent estimates. This can take a few seconds.";
+  try{
+    const response=await fetch("/api/estimate",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        address:getAddress(activeAnalysisProperty),
+        propertyType:activeAnalysisProperty.propertyType,
+        bedrooms:getBeds(activeAnalysisProperty),
+        bathrooms:getBaths(activeAnalysisProperty),
+        squareFootage:getArea(activeAnalysisProperty)
+      })
+    });
+    const data=await response.json();
+    if(!response.ok)throw new Error(data.error||"The automatic estimate could not be completed.");
+    if(data.value?.price){
+      document.getElementById("arvInput").value=Math.round(data.value.price);
+    }
+    if(data.rent?.rent){
+      document.getElementById("rentInput").value=Math.round(data.rent.rent);
+    }
+    const comps=(data.value?.comparables||[]).slice(0,5);
+    document.getElementById("estimateComps").innerHTML=comps.length
+      ? "<strong>Closest comparable sales</strong>" + comps.map(comp=>`<div style="display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--border)"><span>${escapeHTML(comp.formattedAddress||"Address unavailable")}<small style="display:block;color:var(--muted)">${Number.isFinite(Number(comp.distance))?Number(comp.distance).toFixed(2)+" mi away":"Distance unavailable"} · ${escapeHTML(comp.status||"Status unavailable")}</small></span><strong>${money(comp.price)}</strong></div>`).join("")
+      : "No comparable sales were returned for this property.";
+    const compText=comps.length?" Comparable sales returned: "+comps.length+".":" No comparable sales were returned.";
+    const valueText=data.value?.price?"Value estimate: "+money(data.value.price)+" (range "+money(data.value.priceRangeLow)+"–"+money(data.value.priceRangeHigh)+").":"No value estimate was available.";
+    const rentText=data.rent?.rent?" Rent estimate: "+money(data.rent.rent)+"/month (range "+money(data.rent.rentRangeLow)+"–"+money(data.rent.rentRangeHigh)+").":" Rent estimate unavailable.";
+    status.textContent=valueText+rentText+compText+" These are third-party market estimates, not an inspection or guaranteed ARV.";
+    if(data.value?.price||data.rent?.rent)document.getElementById("analysisResults").style.display="none";
+  }catch(error){
+    status.textContent=error.message||"Automatic estimate failed.";
+  }finally{
+    button.disabled=false;
+    button.textContent="✨ Auto-estimate this property";
+  }
+}
+
 function toggleAnalysisMode(){
   const mode=document.getElementById("strategyInput").value;
   document.getElementById("flipInputs").style.display=mode==="flip"?"block":"none";
@@ -940,7 +979,8 @@ function calculateDeal(){
     const annualCashFlow=monthlyCashFlow*12,cashInvested=downPayment+closing+points+initialRepairs;
     const annualNOI=noi*12,capRate=purchase>0?annualNOI/purchase*100:0;
     const cashOnCash=cashInvested>0?annualCashFlow/cashInvested*100:0;
-    const breakEvenRent=vacancyRate<1?(taxes+insurance+maintenance+management+hoa+utilities+other+mortgage)/(1-vacancyRate*(1-managementRate)):0;
+    const breakEvenDenominator=(1-vacancyRate)*(1-managementRate);
+    const breakEvenRent=breakEvenDenominator>0?(taxes+insurance+maintenance+hoa+utilities+other+mortgage)/breakEvenDenominator:0;
     metrics=
       metricCard("Monthly gross rent",money(rent))+
       metricCard("Monthly mortgage payment",money(mortgage))+
@@ -983,8 +1023,5 @@ document.addEventListener("keydown",event=>{
 updateSavedUI();
 initSupabaseAuth();
 </script>
-
-
 </body>
 </html>
-```
