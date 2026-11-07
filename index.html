@@ -2065,6 +2065,38 @@ document.addEventListener("keydown", event => {
 
 updateSavedUI();
 initSupabaseAuth();
+
+async function startPremiumCheckout() {
+  const button = document.getElementById("premiumButton");
+
+  try {
+    button.disabled = true;
+    button.textContent = "Redirecting to checkout...";
+
+    const response = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.url) {
+      throw new Error(data.error || "Unable to start checkout.");
+    }
+
+    window.location.href = data.url;
+
+  } catch (error) {
+    console.error("Checkout error:", error);
+    alert(error.message || "Something went wrong. Please try again.");
+
+    button.disabled = false;
+    button.textContent = "Unlock Premium";
+  }
+}
+
 </script>
 </body>
 </html>
