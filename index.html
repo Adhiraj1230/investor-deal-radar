@@ -736,6 +736,8 @@ function getStreetViewPhoto(p) {
     return "";
   }
 
+  return "/api/streetview?address=" + encodeURIComponent(address);
+}
   const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
 
   return "https://maps.googleapis.com/maps/api/streetview" +
