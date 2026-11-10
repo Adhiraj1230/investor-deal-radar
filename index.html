@@ -2080,17 +2080,30 @@ document.addEventListener("keydown", event => {
 updateSavedUI();
 initSupabaseAuth();
 
+
 async function startPremiumCheckout() {
   const button = document.getElementById("premiumButton");
 
   try {
+    if (!supabaseClient) {
+      throw new Error("Please sign in before purchasing Premium.");
+    }
+
+    const { data: { session }, error } =
+      await supabaseClient.auth.getSession();
+
+    if (error || !session) {
+      throw new Error("Please sign in before purchasing Premium.");
+    }
+
     button.disabled = true;
     button.textContent = "Redirecting to checkout...";
 
     const response = await fetch("/api/create-checkout-session", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.access_token}`
       }
     });
 
@@ -2110,6 +2123,7 @@ async function startPremiumCheckout() {
     button.textContent = "Unlock Premium";
   }
 }
+
 
 </script>
 </body>
