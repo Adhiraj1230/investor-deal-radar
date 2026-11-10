@@ -711,10 +711,25 @@ function escapeHTML(value){
   }[char]));
 }
 
-function getPhoto(p){
-  const candidates=[
-    p.photos,p.photo,p.image,p.imageUrl,p.primaryPhoto,p.thumbnail
-  ];function getStreetViewPhoto(p) {
+
+function getPhoto(p) {
+  const candidates = [
+    p.photos, p.photo, p.image, p.imageUrl, p.primaryPhoto, p.thumbnail
+  ];
+
+  for (const item of candidates) {
+    if (typeof item === "string" && item.startsWith("http")) return item;
+
+    if (Array.isArray(item)) {
+      const first = item.find(x => typeof x === "string" && x.startsWith("http"));
+      if (first) return first;
+    }
+  }
+
+  return "";
+}
+
+function getStreetViewPhoto(p) {
   const address = getAddress(p);
 
   if (!address || address === "Address unavailable") {
@@ -730,17 +745,6 @@ function getPhoto(p){
     "&key=" + apiKey;
 }
 
-  for(const item of candidates){
-    if(typeof item==="string"&&item.startsWith("http"))return item;
-
-    if(Array.isArray(item)){
-      const first=item.find(x=>typeof x==="string"&&x.startsWith("http"));
-      if(first)return first;
-    }
-  }
-
-  return "";
-}
 
 /* Customer-facing investment indicators */
 function investmentMetrics(metrics = null) {
