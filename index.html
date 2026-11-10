@@ -714,7 +714,21 @@ function escapeHTML(value){
 function getPhoto(p){
   const candidates=[
     p.photos,p.photo,p.image,p.imageUrl,p.primaryPhoto,p.thumbnail
-  ];
+  ];function getStreetViewPhoto(p) {
+  const address = getAddress(p);
+
+  if (!address || address === "Address unavailable") {
+    return "";
+  }
+
+  const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
+
+  return "https://maps.googleapis.com/maps/api/streetview" +
+    "?size=640x350" +
+    "&location=" + encodeURIComponent(address) +
+    "&fov=90" +
+    "&key=" + apiKey;
+}
 
   for(const item of candidates){
     if(typeof item==="string"&&item.startsWith("http"))return item;
@@ -803,12 +817,13 @@ function propertyCard(p,isSaved=false){
 
   return `
     <article class="property">
-      <div class="photo">
-        ${photo
-          ?`<img src="${escapeHTML(photo)}" alt="Property photo" loading="lazy">`
-          :"No listing photo provided"}
-      </div>
-
+      <<div class="photo">
+  ${photo
+    ? `<img src="${escapeHTML(photo)}" alt="Property photo" loading="lazy">`
+    : `<img src="${getStreetViewPhoto(p)}" alt="Street View"
+         loading="lazy"
+         onerror="this.style.display='none';this.parentElement.textContent='Street View unavailable';">`}
+</div>
       <div class="property-body">
         <span class="badge">
           ${escapeHTML(p.propertyType||"Residential")}
